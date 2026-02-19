@@ -3,210 +3,269 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LexAsta — Analisi Avvisi di Vendita Immobiliare</title>
+  <title>REPORT — Analisi Avvisi di Vendita Immobiliare</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- ══════════════════════════════════════════
-       HEADER
-  ══════════════════════════════════════════ -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="logo">
-        <span class="logo-mark">§</span>
-        <div class="logo-text">
-          <span class="logo-title">LexAsta</span>
-          <span class="logo-sub">Analisi Procedure Esecutive Immobiliari</span>
+  <!-- ▸ TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-icon">⚖️</div>
+        <div>
+          <div class="brand-name">REPORT</div>
+          <div class="brand-tagline">Analisi Aste Immobiliari</div>
         </div>
       </div>
-      <nav class="header-nav">
-        <a href="#upload">Carica Avvisi</a>
-        <a href="#analisi">Analisi</a>
-        <a href="#guida">Guida</a>
-      </nav>
+      <div class="topbar-links">
+        <a href="#come-funziona">Come funziona</a>
+        <a href="#inizia" class="topbar-cta">Inizia subito →</a>
+      </div>
     </div>
-    <div class="header-rule"></div>
   </header>
 
-  <!-- ══════════════════════════════════════════
-       HERO
-  ══════════════════════════════════════════ -->
+  <!-- ▸ HERO -->
   <section class="hero">
-    <div class="hero-ornament">⚖</div>
-    <h1 class="hero-title">Analisi Legale &amp;<br/><em>Valutazione Economica</em></h1>
-    <p class="hero-sub">Carica uno o più avvisi di vendita immobiliare. Il sistema — operando come avvocato esperto con 20 anni di esperienza in esecuzioni forzate — analizzerà ogni documento e produrrà un <strong>report unificato</strong> con tabella strutturata, rischi, opportunità e giudizio finale.</p>
-    <div class="hero-badges">
-      <span class="badge">Art. 490 c.p.c.</span>
-      <span class="badge">Esecuzioni Immobiliari</span>
-      <span class="badge">Fallimenti &amp; LCA</span>
-      <span class="badge">Multi-file</span>
+    <div class="hero-content">
+      <div class="hero-pill">🏠 Strumento professionale gratuito</div>
+      <h1>Analizza un'asta immobiliare<br/><span class="hero-accent">in pochi minuti</span></h1>
+      <p class="hero-desc">Carica l'avviso di vendita che hai ricevuto o trovato online. Il nostro sistema lo legge, lo analizza come farebbe un avvocato esperto e ti dice chiaramente se è un buon affare o no.</p>
+      <div class="hero-features">
+        <div class="hero-feat">✅ Nessuna competenza tecnica richiesta</div>
+        <div class="hero-feat">✅ Risultato in meno di 2 minuti</div>
+        <div class="hero-feat">✅ Report scaricabile e stampabile</div>
+      </div>
+      <a href="#inizia" class="hero-btn">Analizza il tuo avviso →</a>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hc-header">
+          <span class="hc-dot red"></span>
+          <span class="hc-dot yellow"></span>
+          <span class="hc-dot green"></span>
+          <span class="hc-title">Report Analisi</span>
+        </div>
+        <div class="hc-row">
+          <span class="hc-label">Tribunale</span>
+          <span class="hc-val">Tribunale di Milano</span>
+        </div>
+        <div class="hc-row">
+          <span class="hc-label">Valore stima</span>
+          <span class="hc-val">€ 280.000</span>
+        </div>
+        <div class="hc-row">
+          <span class="hc-label">Prezzo base</span>
+          <span class="hc-val highlight">€ 168.000</span>
+        </div>
+        <div class="hc-row">
+          <span class="hc-label">Sconto</span>
+          <span class="hc-val green">-40% sul valore</span>
+        </div>
+        <div class="hc-verdict low">
+          <span>✅</span>
+          <span>Rischio BASSO — Alta convenienza</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════
-       CONFIGURAZIONE API
-  ══════════════════════════════════════════ -->
-  <section class="section-config" id="config">
+  <!-- ▸ COME FUNZIONA -->
+  <section class="steps-section" id="come-funziona">
     <div class="container">
-      <div class="config-card">
-        <div class="config-header">
-          <span class="config-icon">🔑</span>
-          <div>
-            <h3>Configurazione API</h3>
-            <p>Inserisci la tua Anthropic API Key per abilitare l'analisi AI. La chiave non viene salvata.</p>
+      <div class="section-eyebrow">È semplicissimo</div>
+      <h2 class="section-title">Come funziona in 3 passi</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-icon">🔑</div>
+          <h3>Inserisci la chiave API</h3>
+          <p>Ottieni gratuitamente una chiave di accesso da Anthropic e inseriscila nel campo apposito. Si fa una sola volta.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-icon">📂</div>
+          <h3>Carica i documenti</h3>
+          <p>Trascina il PDF dell'avviso di vendita nella zona di caricamento, oppure clicca il pulsante. Puoi caricare più file insieme.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-icon">📊</div>
+          <h3>Leggi il tuo report</h3>
+          <p>In circa 60 secondi ricevi un'analisi completa: rischi, opportunità, tutti i dati importanti e un giudizio finale chiaro.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▸ APP PRINCIPALE -->
+  <section class="app-section" id="inizia">
+    <div class="container">
+
+      <!-- STEP 1: API KEY -->
+      <div class="app-block" id="block-api">
+        <div class="block-header">
+          <div class="block-num">Passo 1</div>
+          <h2>Inserisci la tua chiave API</h2>
+          <p>La chiave ti permette di usare l'intelligenza artificiale. <a href="https://console.anthropic.com" target="_blank">Ottienila qui gratuitamente →</a></p>
+        </div>
+        <div class="api-box">
+          <div class="api-visual">🔐</div>
+          <div class="api-form">
+            <label class="field-label">La tua chiave Anthropic</label>
+            <div class="api-row">
+              <input type="password" id="apiKey" placeholder="sk-ant-api03-..." class="text-input" autocomplete="off" />
+              <button class="btn-confirm" onclick="verifyApiKey()">
+                <span>Conferma</span>
+                <span class="btn-arrow">→</span>
+              </button>
+            </div>
+            <div id="apiStatus" class="field-hint"></div>
           </div>
         </div>
-        <div class="api-input-row">
-          <input type="password" id="apiKey" placeholder="sk-ant-api03-..." class="api-input" />
-          <button class="btn-verify" onclick="verifyApiKey()">Verifica</button>
+        <div class="tip-box">
+          <div class="tip-icon">💡</div>
+          <div><strong>Non hai una chiave?</strong> Vai su <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>, registrati gratuitamente e copia la chiave che inizia con <code>sk-ant-</code></div>
         </div>
-        <div id="apiStatus" class="api-status"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════
-       UPLOAD SECTION
-  ══════════════════════════════════════════ -->
-  <section class="section-upload" id="upload">
-    <div class="container">
-      <div class="section-label">Passo 1</div>
-      <h2 class="section-title">Carica gli Avvisi di Vendita</h2>
-      <p class="section-desc">Puoi caricare più file contemporaneamente (.pdf, .txt, .docx). Il sistema analizzerà tutti i documenti e produrrà un unico report consolidato.</p>
-
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="fileInput" multiple accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg" class="file-input" />
-        <div class="upload-icon">📄</div>
-        <p class="upload-main">Trascina i file qui oppure <span class="upload-link">clicca per selezionare</span></p>
-        <p class="upload-formats">PDF · TXT · DOC · DOCX · PNG · JPG</p>
-        <p class="upload-formats">Multipli file supportati</p>
       </div>
 
-      <div id="fileList" class="file-list hidden"></div>
+      <!-- STEP 2: UPLOAD -->
+      <div class="app-block" id="block-upload">
+        <div class="block-header">
+          <div class="block-num">Passo 2</div>
+          <h2>Carica i tuoi documenti</h2>
+          <p>Puoi caricare uno o più file contemporaneamente. Formati accettati: <strong>PDF, TXT, Word, immagini JPG/PNG</strong></p>
+        </div>
 
-      <div class="upload-actions">
-        <button class="btn-primary" id="analyzeBtn" onclick="startAnalysis()" disabled>
-          <span class="btn-icon">⚖</span> Avvia Analisi Legale
-        </button>
-        <button class="btn-ghost" onclick="clearAll()">Azzera tutto</button>
+        <div class="upload-area" id="uploadZone">
+          <input type="file" id="fileInput" multiple accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg" class="file-input-hidden" />
+          <div class="upload-illustration">
+            <div class="upload-cloud">☁️</div>
+            <div class="upload-arrow-anim">⬆</div>
+          </div>
+          <p class="upload-main-text">Trascina qui i file</p>
+          <p class="upload-or">oppure</p>
+          <button class="btn-upload-pick" onclick="document.getElementById('fileInput').click()">
+            📂 Scegli file dal computer
+          </button>
+          <p class="upload-formats-hint">PDF · TXT · DOC · DOCX · PNG · JPG &nbsp;|&nbsp; Più file contemporaneamente ✓</p>
+        </div>
+
+        <!-- File list -->
+        <div id="fileList" class="file-list hidden"></div>
+
+        <!-- Analyze button -->
+        <div id="analyzeWrapper" class="analyze-wrapper hidden">
+          <button class="btn-analyze" id="analyzeBtn" onclick="startAnalysis()" disabled>
+            <span class="btn-analyze-icon">⚖️</span>
+            <div>
+              <div class="btn-analyze-main">Avvia l'analisi</div>
+              <div class="btn-analyze-sub">Riceverai il report in circa 60 secondi</div>
+            </div>
+            <span class="btn-analyze-arrow">→</span>
+          </button>
+          <button class="btn-reset" onclick="clearAll()">✕ Ricomincia da capo</button>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ══════════════════════════════════════════
-       PROGRESS
-  ══════════════════════════════════════════ -->
-  <section class="section-progress hidden" id="progressSection">
-    <div class="container">
-      <div class="progress-card">
-        <div class="progress-header">
-          <div class="progress-spinner"></div>
-          <div>
-            <h3 id="progressTitle">Analisi in corso…</h3>
-            <p id="progressDesc">Elaborazione documento 1 di 1</p>
+      <!-- PROGRESS -->
+      <div class="app-block hidden" id="block-progress">
+        <div class="block-header">
+          <div class="block-num">In corso…</div>
+          <h2>Analisi in corso, attendi</h2>
+          <p>L'intelligenza artificiale sta leggendo i tuoi documenti. Ci vorrà circa un minuto.</p>
+        </div>
+        <div class="progress-visual">
+          <div class="progress-spinner-big"></div>
+          <div class="progress-texts">
+            <div class="progress-main" id="progressTitle">Avvio analisi…</div>
+            <div class="progress-sub" id="progressDesc">Elaborazione in corso</div>
           </div>
         </div>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressBar"></div>
         </div>
-        <div class="progress-log" id="progressLog"></div>
+        <div class="progress-steps" id="progressLog"></div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="app-block hidden" id="block-results">
+
+        <!-- Verdict top banner -->
+        <div id="verdictBanner" class="verdict-banner hidden"></div>
+
+        <div class="results-topbar">
+          <div>
+            <div class="block-num">Il tuo Report</div>
+            <h2>Analisi completata ✓</h2>
+          </div>
+          <div class="export-btns">
+            <button class="btn-export" onclick="exportHTML()">⬇ Salva HTML</button>
+            <button class="btn-export" onclick="exportText()">⬇ Salva TXT</button>
+            <button class="btn-export" onclick="window.print()">🖨 Stampa</button>
+          </div>
+        </div>
+
+        <!-- Navigation tabs -->
+        <div class="result-tabs">
+          <button class="rtab active" onclick="switchTab('panoramica', this)">🏠 Panoramica</button>
+          <button class="rtab" onclick="switchTab('legale', this)">⚖️ Legale</button>
+          <button class="rtab" onclick="switchTab('economica', this)">💰 Economia</button>
+          <button class="rtab" onclick="switchTab('rischi', this)">🔍 Rischi</button>
+          <button class="rtab" onclick="switchTab('tabella', this)">📋 Tutti i dati</button>
+        </div>
+
+        <div class="rtab-content active" id="tab-panoramica"></div>
+        <div class="rtab-content" id="tab-legale"></div>
+        <div class="rtab-content" id="tab-economica"></div>
+        <div class="rtab-content" id="tab-rischi"></div>
+        <div class="rtab-content" id="tab-tabella"></div>
+
+        <!-- Bottom CTA -->
+        <div class="results-footer">
+          <button class="btn-new" onclick="clearAll()">+ Analizza un altro documento</button>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════
-       RISULTATI / ANALISI
-  ══════════════════════════════════════════ -->
-  <section class="section-results hidden" id="analisi">
+  <!-- ▸ FAQ -->
+  <section class="faq-section">
     <div class="container">
-      <div class="results-header">
-        <div class="section-label">Report Unificato</div>
-        <h2 class="section-title">Analisi Legale &amp; Valutazione</h2>
-        <div class="results-actions">
-          <button class="btn-export" onclick="exportHTML()">⬇ Esporta HTML</button>
-          <button class="btn-export" onclick="exportText()">⬇ Esporta TXT</button>
-          <button class="btn-export btn-print" onclick="window.print()">🖨 Stampa</button>
+      <div class="section-eyebrow">Domande frequenti</div>
+      <h2 class="section-title">Hai dei dubbi?</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <div class="faq-q">È sicuro inserire la mia chiave API?</div>
+          <div class="faq-a">La chiave viene usata solo in questa sessione e non viene mai salvata o trasmessa a terzi. Puoi verificarlo guardando il codice sorgente della pagina.</div>
         </div>
-      </div>
-
-      <!-- VERDICT BADGE -->
-      <div id="verdictBadge" class="verdict-badge hidden"></div>
-
-      <!-- TABS -->
-      <div class="tabs">
-        <button class="tab active" data-tab="overview" onclick="switchTab('overview', this)">Panoramica</button>
-        <button class="tab" data-tab="legal" onclick="switchTab('legal', this)">Analisi Legale</button>
-        <button class="tab" data-tab="economic" onclick="switchTab('economic', this)">Valutazione Economica</button>
-        <button class="tab" data-tab="risks" onclick="switchTab('risks', this)">Rischi &amp; Opportunità</button>
-        <button class="tab" data-tab="table" onclick="switchTab('table', this)">Tabella Dati</button>
-      </div>
-
-      <div class="tab-content active" id="tab-overview">
-        <div id="overviewContent" class="prose-content"></div>
-      </div>
-      <div class="tab-content" id="tab-legal">
-        <div id="legalContent" class="prose-content"></div>
-      </div>
-      <div class="tab-content" id="tab-economic">
-        <div id="economicContent" class="prose-content"></div>
-      </div>
-      <div class="tab-content" id="tab-risks">
-        <div id="risksContent" class="prose-content"></div>
-      </div>
-      <div class="tab-content" id="tab-table">
-        <div id="tableContent"></div>
+        <div class="faq-item">
+          <div class="faq-q">Che formati di file posso caricare?</div>
+          <div class="faq-a">Puoi caricare PDF, file Word (.doc, .docx), file di testo (.txt) e immagini (JPG, PNG). Puoi anche caricare più file dello stesso avviso contemporaneamente.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">L'analisi sostituisce un avvocato?</div>
+          <div class="faq-a">No. Il report è uno strumento di supporto alla tua valutazione iniziale. Per decisioni di acquisto importanti, consulta sempre un avvocato abilitato.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Se carico più file cosa succede?</div>
+          <div class="faq-a">Il sistema analizza tutti i documenti separatamente e poi li unisce in un unico report, compensando i dati mancanti da un file con quelli presenti negli altri.</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════
-       GUIDA
-  ══════════════════════════════════════════ -->
-  <section class="section-guide" id="guida">
-    <div class="container">
-      <div class="section-label">Documentazione</div>
-      <h2 class="section-title">Come funziona</h2>
-      <div class="guide-grid">
-        <div class="guide-card">
-          <div class="guide-num">01</div>
-          <h4>Carica i documenti</h4>
-          <p>Seleziona uno o più avvisi di vendita in formato PDF, TXT o immagine. Il sistema supporta caricamento multiplo simultaneo.</p>
-        </div>
-        <div class="guide-card">
-          <div class="guide-num">02</div>
-          <h4>Analisi AI specializzata</h4>
-          <p>L'AI analizza ogni documento applicando il framework giuridico ex art. 490 c.p.c., identificando vincoli, ipoteche e criticità.</p>
-        </div>
-        <div class="guide-card">
-          <div class="guide-num">03</div>
-          <h4>Report unificato</h4>
-          <p>I dati di tutti i file vengono consolidati: le informazioni mancanti da un documento vengono compensate dagli altri.</p>
-        </div>
-        <div class="guide-card">
-          <div class="guide-num">04</div>
-          <h4>Esporta &amp; Condividi</h4>
-          <p>Scarica il report in HTML o TXT, oppure stampa direttamente. Il file è pronto per archiviazione o condivisione con clienti.</p>
-        </div>
-      </div>
-
-      <div class="legal-notice">
-        <span class="notice-icon">⚠</span>
-        <p><strong>Avvertenza legale:</strong> L'analisi generata è uno strumento di supporto alla due diligence e non costituisce consulenza legale professionale. Per decisioni di investimento, consultare sempre un avvocato abilitato e un professionista tecnico abilitato.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════
-       FOOTER
-  ══════════════════════════════════════════ -->
+  <!-- ▸ FOOTER -->
   <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-logo">§ LexAsta</div>
-      <p>Analisi Procedure Esecutive Immobiliari — Powered by Claude AI</p>
-      <p class="footer-legal">Strumento di supporto professionale. Non costituisce consulenza legale ex L. 247/2012.</p>
+      <div class="footer-brand">⚖️ REPORT</div>
+      <p>Strumento di analisi aste immobiliari — Powered by Claude AI (Anthropic)</p>
+      <p class="footer-disclaimer">⚠️ Questo strumento è un supporto informativo e non costituisce consulenza legale professionale ai sensi della L. 247/2012. Per qualsiasi decisione di acquisto, consulta un avvocato abilitato.</p>
     </div>
   </footer>
 
