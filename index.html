@@ -4,271 +4,938 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>REPORT — Analisi Avvisi di Vendita Immobiliare</title>
-  <link rel="stylesheet" href="css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#f8f9fc; --white:#ffffff; --ink:#0f1117; --ink-mid:#374151;
+      --ink-soft:#6b7280; --ink-xs:#9ca3af;
+      --blue:#2563eb; --blue-dark:#1d4ed8; --blue-pale:#eff6ff; --blue-mid:#dbeafe;
+      --green:#16a34a; --green-pale:#f0fdf4; --green-mid:#dcfce7;
+      --red:#dc2626; --red-pale:#fef2f2; --red-mid:#fee2e2;
+      --yellow:#d97706; --yellow-pale:#fffbeb; --yellow-mid:#fef3c7;
+      --border:#e5e7eb; --border-mid:#d1d5db;
+      --r:12px; --r-sm:8px;
+      --sh:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.04);
+      --sh-sm:0 1px 3px rgba(0,0,0,.08);
+      --sh-lg:0 16px 48px rgba(0,0,0,.12);
+      --font:'Plus Jakarta Sans',system-ui,sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+    a{color:var(--blue);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:960px;margin:0 auto;padding:0 24px}
+    .hidden{display:none!important}
+
+    /* ── TOPBAR ── */
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topbar-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-icon{font-size:28px}
+    .brand-name{font-size:20px;font-weight:800;letter-spacing:-.02em}
+    .brand-tag{font-size:11px;color:var(--ink-soft);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+    .topbar-links{display:flex;align-items:center;gap:20px}
+    .topbar-links a{color:var(--ink-mid);font-size:14px;font-weight:500;transition:color .15s}
+    .topbar-links a:hover{color:var(--blue);text-decoration:none}
+    .topbar-cta{background:var(--blue)!important;color:white!important;padding:8px 18px;border-radius:8px;font-weight:700!important}
+    .topbar-cta:hover{background:var(--blue-dark)!important}
+
+    /* ── HERO ── */
+    .hero{background:linear-gradient(135deg,#0f1117 0%,#1e2433 100%);color:white;padding:72px 24px 88px;display:flex;align-items:center;justify-content:center;gap:56px;flex-wrap:wrap}
+    .hero-content{max-width:500px}
+    .hero-pill{display:inline-block;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:100px;padding:6px 16px;font-size:13px;font-weight:600;margin-bottom:22px;color:rgba(255,255,255,.85)}
+    .hero h1{font-size:clamp(30px,5vw,50px);font-weight:800;line-height:1.1;margin-bottom:18px;letter-spacing:-.03em}
+    .hero-accent{background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-desc{font-size:16px;line-height:1.75;color:rgba(255,255,255,.72);margin-bottom:26px}
+    .hero-feats{display:flex;flex-direction:column;gap:8px;margin-bottom:32px}
+    .hero-feat{font-size:15px;font-weight:500;color:rgba(255,255,255,.85)}
+    .hero-btn{display:inline-flex;align-items:center;background:var(--blue);color:white;font-size:16px;font-weight:700;padding:14px 28px;border-radius:var(--r);transition:all .2s;box-shadow:0 4px 20px rgba(37,99,235,.4)}
+    .hero-btn:hover{background:var(--blue-dark);transform:translateY(-1px);text-decoration:none}
+
+    /* Hero card */
+    .hero-card{background:var(--white);border-radius:20px;padding:22px;width:290px;box-shadow:var(--sh-lg);animation:floatCard 4s ease-in-out infinite;flex-shrink:0}
+    @keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .hc-head{display:flex;align-items:center;gap:5px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .hc-dot{width:10px;height:10px;border-radius:50%}
+    .hc-dot.r{background:#ef4444}.hc-dot.y{background:#f59e0b}.hc-dot.g{background:#22c55e}
+    .hc-title{font-size:12px;font-weight:800;color:var(--ink);margin-left:auto}
+    .hc-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+    .hc-row:last-of-type{border:none}
+    .hc-lbl{color:var(--ink-soft);font-weight:500}.hc-val{font-weight:700}
+    .hc-val.hi{color:var(--blue);font-size:15px}.hc-val.gn{color:var(--green)}
+    .hc-verdict{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;border-radius:8px;font-size:12px;font-weight:700;background:var(--green-pale);color:var(--green);border:1px solid var(--green-mid)}
+
+    /* ── STEPS ── */
+    .steps{padding:72px 0;background:var(--white);border-bottom:1px solid var(--border)}
+    .eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-bottom:8px}
+    .sec-title{font-size:clamp(24px,4vw,36px);font-weight:800;letter-spacing:-.02em;margin-bottom:44px}
+    .steps-grid{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+    .step{flex:1;min-width:180px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:28px 24px;position:relative;transition:box-shadow .2s,transform .2s}
+    .step:hover{box-shadow:var(--sh);transform:translateY(-2px)}
+    .step-num{position:absolute;top:-13px;left:20px;background:var(--blue);color:white;font-size:11px;font-weight:800;padding:3px 11px;border-radius:100px;text-transform:uppercase;letter-spacing:.06em}
+    .step-ico{font-size:34px;margin-bottom:12px}
+    .step h3{font-size:16px;font-weight:700;margin-bottom:8px}
+    .step p{font-size:14px;color:var(--ink-mid);line-height:1.65}
+    .step-arr{font-size:26px;color:var(--border-mid);padding:0 6px;flex-shrink:0}
+
+    /* ── APP ── */
+    .app-sec{padding:56px 0}
+    .block{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:36px;margin-bottom:20px;box-shadow:var(--sh-sm)}
+    .block-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--blue);margin-bottom:6px}
+    .block h2{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+    .block-desc{font-size:15px;color:var(--ink-mid);margin-bottom:28px}
+
+    /* API */
+    .api-box{display:flex;gap:20px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:14px}
+    .api-ico{font-size:38px;flex-shrink:0}
+    .api-form{flex:1}
+    .field-lbl{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+    .api-row{display:flex;gap:10px}
+    .txt-input{flex:1;height:46px;border:2px solid var(--border);border-radius:var(--r-sm);padding:0 14px;font-family:var(--font);font-size:14px;color:var(--ink);background:white;outline:none;transition:border-color .15s}
+    .txt-input:focus{border-color:var(--blue)}
+    .txt-input::placeholder{color:var(--ink-xs)}
+    .btn-ok{height:46px;background:var(--blue);color:white;border:none;border-radius:var(--r-sm);padding:0 22px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;white-space:nowrap}
+    .btn-ok:hover{background:var(--blue-dark)}
+    .f-hint{margin-top:8px;font-size:13px;font-weight:600}
+    .f-hint.ok{color:var(--green)}.f-hint.err{color:var(--red)}
+    .tip{display:flex;gap:10px;background:var(--blue-pale);border:1px solid var(--blue-mid);border-radius:var(--r-sm);padding:12px 16px;font-size:13px;color:var(--ink-mid)}
+    .tip-ico{font-size:18px;flex-shrink:0}
+    .tip code{background:rgba(37,99,235,.1);padding:1px 5px;border-radius:4px;font-size:12px;color:var(--blue-dark)}
+
+    /* UPLOAD */
+    .upload-zone{border:3px dashed var(--border-mid);border-radius:20px;padding:52px 28px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);position:relative;margin-bottom:18px}
+    .upload-zone:hover,.upload-zone.drag-over{border-color:var(--blue);background:var(--blue-pale)}
+    .file-input-h{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+    .up-cloud{font-size:50px;line-height:1}
+    .up-arr{font-size:22px;color:var(--ink-xs);animation:bounce 1.5s ease-in-out infinite;display:block;margin-top:4px}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .up-main{font-size:19px;font-weight:700;margin:14px 0 4px}
+    .up-or{font-size:13px;color:var(--ink-soft);margin-bottom:14px}
+    .btn-pick{display:inline-flex;align-items:center;gap:7px;background:white;border:2px solid var(--border-mid);border-radius:var(--r-sm);padding:11px 22px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;color:var(--ink);transition:all .15s;margin-bottom:14px;position:relative;z-index:1}
+    .btn-pick:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+    .up-hint{font-size:12px;color:var(--ink-xs);font-weight:500}
+
+    /* File list */
+    .file-list{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+    .file-item{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px 16px}
+    .f-ico{font-size:26px;flex-shrink:0}
+    .f-meta{flex:1;min-width:0}
+    .f-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .f-size{font-size:12px;color:var(--ink-soft)}
+    .f-badge{flex-shrink:0;font-size:11px;font-weight:700;padding:3px 11px;border-radius:100px;background:var(--border);color:var(--ink-soft)}
+    .f-badge.done{background:var(--green-mid);color:var(--green)}
+    .f-badge.processing{background:var(--blue-mid);color:var(--blue-dark)}
+    .f-badge.error{background:var(--red-mid);color:var(--red)}
+    .f-del{background:none;border:none;cursor:pointer;font-size:17px;color:var(--ink-xs);padding:4px 7px;border-radius:6px;transition:all .15s;flex-shrink:0}
+    .f-del:hover{background:var(--red-pale);color:var(--red)}
+
+    /* Analyze btn */
+    .analyze-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    .btn-analyze{flex:1;min-width:240px;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:white;border:none;border-radius:var(--r);padding:18px 24px;font-family:var(--font);cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(37,99,235,.35)}
+    .btn-analyze:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,99,235,.45)}
+    .btn-analyze:disabled{opacity:.4;cursor:not-allowed}
+    .ba-ico{font-size:30px;flex-shrink:0}
+    .ba-main{font-size:17px;font-weight:800;text-align:left}
+    .ba-sub{font-size:12px;opacity:.8;margin-top:2px;text-align:left}
+    .ba-arr{font-size:20px;margin-left:auto;flex-shrink:0}
+    .btn-reset{background:none;border:1px solid var(--border-mid);border-radius:var(--r-sm);padding:10px 18px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap}
+    .btn-reset:hover{border-color:var(--red);color:var(--red)}
+
+    /* Progress */
+    .prog-vis{display:flex;align-items:center;gap:22px;margin-bottom:22px}
+    .prog-spin{width:52px;height:52px;border:5px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .9s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .prog-main{font-size:19px;font-weight:800}
+    .prog-sub{font-size:13px;color:var(--ink-soft);margin-top:3px}
+    .prog-track{background:var(--border);border-radius:100px;height:8px;overflow:hidden;margin-bottom:18px}
+    .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);border-radius:100px;width:0%;transition:width .4s ease}
+    .prog-log{display:flex;flex-direction:column;gap:5px;max-height:130px;overflow-y:auto}
+    .plog{font-size:13px;color:var(--ink-soft)}
+    .plog.ok{color:var(--green)}.plog.warn{color:var(--yellow)}
+
+    /* Verdict */
+    .verdict{border-radius:var(--r);padding:22px 26px;margin-bottom:26px;display:flex;align-items:center;gap:18px}
+    .verdict.low{background:var(--green-pale);border:2px solid var(--green)}
+    .verdict.mid{background:var(--yellow-pale);border:2px solid var(--yellow)}
+    .verdict.high{background:var(--red-pale);border:2px solid var(--red)}
+    .v-ico{font-size:44px;flex-shrink:0}
+    .v-ey{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;opacity:.6;margin-bottom:3px}
+    .v-title{font-size:22px;font-weight:800}
+    .v-desc{font-size:14px;margin-top:5px;opacity:.85}
+
+    /* Results top */
+    .res-top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+    .exp-btns{display:flex;gap:7px;flex-wrap:wrap}
+    .btn-exp{background:white;border:1px solid var(--border-mid);border-radius:var(--r-sm);padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;color:var(--ink-mid);transition:all .15s}
+    .btn-exp:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+
+    /* Tabs */
+    .tabs{display:flex;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:3px;margin-bottom:26px;overflow-x:auto}
+    .tab{flex:1;min-width:fit-content;background:none;border:none;border-radius:6px;padding:10px 14px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap}
+    .tab:hover{color:var(--ink);background:white}
+    .tab.active{background:white;color:var(--blue);box-shadow:var(--sh-sm)}
+    .tab-pane{display:none}
+    .tab-pane.active{display:block;animation:fadeIn .25s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Prose */
+    .prose{font-size:15px;line-height:1.75;color:var(--ink-mid)}
+    .prose h3{font-size:19px;font-weight:800;color:var(--ink);margin:26px 0 12px}
+    .prose p{margin-bottom:12px}
+    .prose strong{color:var(--ink);font-weight:700}
+
+    /* Info card */
+    .icard{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:18px 22px;margin-bottom:14px}
+    .icard-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .if-lbl{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+    .if-val{font-size:15px;font-weight:600;color:var(--ink)}
+    .if-val.big{font-size:20px;font-weight:800;color:var(--blue)}
+    .if-val.gn{color:var(--green);font-weight:700}
+    .if-val.nd{color:var(--ink-xs);font-style:italic;font-weight:400;font-size:13px}
+    .if-full{grid-column:1/-1}
+
+    /* Alert */
+    .alert{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;border-radius:var(--r-sm);margin-bottom:10px;font-size:14px}
+    .alert.risk{background:var(--red-pale);border:1px solid var(--red-mid);color:#7f1d1d}
+    .alert.opp{background:var(--green-pale);border:1px solid var(--green-mid);color:#14532d}
+    .alert.info{background:var(--blue-pale);border:1px solid var(--blue-mid);color:#1e3a5f}
+    .alert.warn{background:var(--yellow-pale);border:1px solid var(--yellow-mid);color:#78350f}
+    .al-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+    .al-txt{flex:1;font-weight:500;line-height:1.55}
+
+    /* Table */
+    .tbl-wrap{overflow-x:auto;border-radius:var(--r-sm);border:1px solid var(--border)}
+    .dtbl{width:100%;border-collapse:collapse;font-size:13px}
+    .dtbl th{background:var(--ink);color:white;padding:11px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+    .dtbl td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+    .dtbl tr:last-child td{border-bottom:none}
+    .dtbl tr:hover td{background:var(--bg)}
+    .dt-cat{font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);white-space:nowrap;width:130px;border-right:2px solid var(--blue-mid);background:var(--blue-pale)}
+    .dt-key{font-weight:600;color:var(--ink-mid);width:190px}
+    .dt-val{color:var(--ink);font-weight:500}
+    .dt-nd{color:var(--ink-xs);font-style:italic;font-weight:400}
+    .dt-risk{color:var(--red);font-weight:700}
+    .dt-good{color:var(--green);font-weight:700}
+
+    /* Footer btns */
+    .res-foot{margin-top:28px;text-align:center}
+    .btn-new{display:inline-flex;align-items:center;gap:7px;background:var(--bg);border:2px solid var(--border-mid);border-radius:var(--r);padding:12px 24px;font-family:var(--font);font-size:15px;font-weight:700;color:var(--ink-mid);cursor:pointer;transition:all .15s}
+    .btn-new:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+
+    /* FAQ */
+    .faq-sec{background:white;border-top:1px solid var(--border);padding:72px 0}
+    .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .faq-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:22px}
+    .faq-q{font-size:15px;font-weight:800;margin-bottom:8px}
+    .faq-a{font-size:14px;color:var(--ink-mid);line-height:1.65}
+
+    /* Footer */
+    .site-footer{background:var(--ink);color:rgba(255,255,255,.5);padding:44px 24px;text-align:center}
+    .ft-brand{font-size:20px;font-weight:800;color:white;margin-bottom:9px}
+    .site-footer p{font-size:13px;margin-bottom:7px}
+    .ft-disc{font-size:11px;opacity:.55;line-height:1.6;margin-top:14px}
+
+    /* Print */
+    @media print{
+      .topbar,.hero,.steps,.faq-sec,.site-footer,.exp-btns,.tabs,.res-foot,.btn-reset,.analyze-wrap,.block:not(#block-results),.block-label{display:none!important}
+      .tab-pane{display:block!important}
+      .app-sec{padding:0}
+      body{background:white}
+    }
+
+    /* Mobile */
+    @media(max-width:680px){
+      .hero{padding:44px 18px 56px;flex-direction:column;gap:28px}
+      .hero-card{display:none}
+      .steps-grid{flex-direction:column}
+      .step-arr{display:none}
+      .block{padding:22px 18px}
+      .api-box{flex-direction:column}
+      .api-row{flex-direction:column}
+      .icard-grid{grid-template-columns:1fr}
+      .faq-grid{grid-template-columns:1fr}
+      .topbar-links a:not(.topbar-cta){display:none}
+      .res-top{flex-direction:column;align-items:flex-start}
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ▸ TOPBAR -->
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-icon">⚖️</div>
-        <div>
-          <div class="brand-name">REPORT</div>
-          <div class="brand-tagline">Analisi Aste Immobiliari</div>
-        </div>
-      </div>
-      <div class="topbar-links">
-        <a href="#come-funziona">Come funziona</a>
-        <a href="#inizia" class="topbar-cta">Inizia subito →</a>
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-icon">⚖️</div>
+      <div>
+        <div class="brand-name">REPORT</div>
+        <div class="brand-tag">Analisi Aste Immobiliari</div>
       </div>
     </div>
-  </header>
-
-  <!-- ▸ HERO -->
-  <section class="hero">
-    <div class="hero-content">
-      <div class="hero-pill">🏠 Strumento professionale gratuito</div>
-      <h1>Analizza un'asta immobiliare<br/><span class="hero-accent">in pochi minuti</span></h1>
-      <p class="hero-desc">Carica l'avviso di vendita che hai ricevuto o trovato online. Il nostro sistema lo legge, lo analizza come farebbe un avvocato esperto e ti dice chiaramente se è un buon affare o no.</p>
-      <div class="hero-features">
-        <div class="hero-feat">✅ Nessuna competenza tecnica richiesta</div>
-        <div class="hero-feat">✅ Risultato in meno di 2 minuti</div>
-        <div class="hero-feat">✅ Report scaricabile e stampabile</div>
-      </div>
-      <a href="#inizia" class="hero-btn">Analizza il tuo avviso →</a>
+    <div class="topbar-links">
+      <a href="#come-funziona">Come funziona</a>
+      <a href="#inizia" class="topbar-cta">Inizia →</a>
     </div>
-    <div class="hero-visual">
-      <div class="hero-card">
-        <div class="hc-header">
-          <span class="hc-dot red"></span>
-          <span class="hc-dot yellow"></span>
-          <span class="hc-dot green"></span>
-          <span class="hc-title">Report Analisi</span>
-        </div>
-        <div class="hc-row">
-          <span class="hc-label">Tribunale</span>
-          <span class="hc-val">Tribunale di Milano</span>
-        </div>
-        <div class="hc-row">
-          <span class="hc-label">Valore stima</span>
-          <span class="hc-val">€ 280.000</span>
-        </div>
-        <div class="hc-row">
-          <span class="hc-label">Prezzo base</span>
-          <span class="hc-val highlight">€ 168.000</span>
-        </div>
-        <div class="hc-row">
-          <span class="hc-label">Sconto</span>
-          <span class="hc-val green">-40% sul valore</span>
-        </div>
-        <div class="hc-verdict low">
-          <span>✅</span>
-          <span>Rischio BASSO — Alta convenienza</span>
-        </div>
-      </div>
-    </div>
-  </section>
+  </div>
+</header>
 
-  <!-- ▸ COME FUNZIONA -->
-  <section class="steps-section" id="come-funziona">
-    <div class="container">
-      <div class="section-eyebrow">È semplicissimo</div>
-      <h2 class="section-title">Come funziona in 3 passi</h2>
-      <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-num">1</div>
-          <div class="step-icon">🔑</div>
-          <h3>Inserisci la chiave API</h3>
-          <p>Ottieni gratuitamente una chiave di accesso da Anthropic e inseriscila nel campo apposito. Si fa una sola volta.</p>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step-card">
-          <div class="step-num">2</div>
-          <div class="step-icon">📂</div>
-          <h3>Carica i documenti</h3>
-          <p>Trascina il PDF dell'avviso di vendita nella zona di caricamento, oppure clicca il pulsante. Puoi caricare più file insieme.</p>
-        </div>
-        <div class="step-arrow">→</div>
-        <div class="step-card">
-          <div class="step-num">3</div>
-          <div class="step-icon">📊</div>
-          <h3>Leggi il tuo report</h3>
-          <p>In circa 60 secondi ricevi un'analisi completa: rischi, opportunità, tutti i dati importanti e un giudizio finale chiaro.</p>
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-pill">🏠 Strumento professionale gratuito</div>
+    <h1>Analizza un'asta<br/><span class="hero-accent">in pochi minuti</span></h1>
+    <p class="hero-desc">Carica l'avviso di vendita. Il sistema lo legge, lo analizza come un avvocato esperto e ti dice chiaramente se è un buon affare o no.</p>
+    <div class="hero-feats">
+      <div class="hero-feat">✅ Nessuna competenza tecnica richiesta</div>
+      <div class="hero-feat">✅ Risultato in meno di 2 minuti</div>
+      <div class="hero-feat">✅ Report scaricabile e stampabile</div>
+    </div>
+    <a href="#inizia" class="hero-btn">Analizza il tuo avviso →</a>
+  </div>
+  <div class="hero-card">
+    <div class="hc-head">
+      <span class="hc-dot r"></span><span class="hc-dot y"></span><span class="hc-dot g"></span>
+      <span class="hc-title">Report Analisi</span>
+    </div>
+    <div class="hc-row"><span class="hc-lbl">Tribunale</span><span class="hc-val">Milano</span></div>
+    <div class="hc-row"><span class="hc-lbl">Valore stima</span><span class="hc-val">€ 280.000</span></div>
+    <div class="hc-row"><span class="hc-lbl">Prezzo base</span><span class="hc-val hi">€ 168.000</span></div>
+    <div class="hc-row"><span class="hc-lbl">Sconto</span><span class="hc-val gn">-40%</span></div>
+    <div class="hc-verdict">✅ Rischio BASSO — Alta convenienza</div>
+  </div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="steps" id="come-funziona">
+  <div class="container">
+    <div class="eyebrow">È semplicissimo</div>
+    <h2 class="sec-title">Come funziona in 3 passi</h2>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">Passo 1</div>
+        <div class="step-ico">🔑</div>
+        <h3>Inserisci la chiave API</h3>
+        <p>Ottieni gratuitamente la chiave di accesso da Anthropic. Si fa una sola volta ed è gratis.</p>
+      </div>
+      <div class="step-arr">→</div>
+      <div class="step">
+        <div class="step-num">Passo 2</div>
+        <div class="step-ico">📂</div>
+        <h3>Carica i documenti</h3>
+        <p>Trascina il PDF dell'avviso di vendita, oppure clicca il pulsante. Puoi caricare più file insieme.</p>
+      </div>
+      <div class="step-arr">→</div>
+      <div class="step">
+        <div class="step-num">Passo 3</div>
+        <div class="step-ico">📊</div>
+        <h3>Leggi il report</h3>
+        <p>In circa 60 secondi ricevi l'analisi completa: rischi, opportunità e un giudizio finale chiaro.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ▸ APP PRINCIPALE -->
-  <section class="app-section" id="inizia">
-    <div class="container">
+<!-- APP -->
+<section class="app-sec" id="inizia">
+  <div class="container">
 
-      <!-- STEP 1: API KEY -->
-      <div class="app-block" id="block-api">
-        <div class="block-header">
-          <div class="block-num">Passo 1</div>
-          <h2>Inserisci la tua chiave API</h2>
-          <p>La chiave ti permette di usare l'intelligenza artificiale. <a href="https://console.anthropic.com" target="_blank">Ottienila qui gratuitamente →</a></p>
-        </div>
-        <div class="api-box">
-          <div class="api-visual">🔐</div>
-          <div class="api-form">
-            <label class="field-label">La tua chiave Anthropic</label>
-            <div class="api-row">
-              <input type="password" id="apiKey" placeholder="sk-ant-api03-..." class="text-input" autocomplete="off" />
-              <button class="btn-confirm" onclick="verifyApiKey()">
-                <span>Conferma</span>
-                <span class="btn-arrow">→</span>
-              </button>
-            </div>
-            <div id="apiStatus" class="field-hint"></div>
+    <!-- PASSO 1: API -->
+    <div class="block" id="block-api">
+      <div class="block-label">Passo 1</div>
+      <h2>Inserisci la tua chiave API</h2>
+      <p class="block-desc">La chiave ti permette di usare l'intelligenza artificiale. <a href="https://console.anthropic.com" target="_blank">Ottienila gratis su console.anthropic.com →</a></p>
+      <div class="api-box">
+        <div class="api-ico">🔐</div>
+        <div class="api-form">
+          <label class="field-lbl">La tua chiave Anthropic</label>
+          <div class="api-row">
+            <input type="password" id="apiKey" placeholder="sk-ant-api03-..." class="txt-input" autocomplete="off" onkeydown="if(event.key==='Enter')verifyApiKey()" />
+            <button class="btn-ok" onclick="verifyApiKey()">Conferma →</button>
           </div>
-        </div>
-        <div class="tip-box">
-          <div class="tip-icon">💡</div>
-          <div><strong>Non hai una chiave?</strong> Vai su <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>, registrati gratuitamente e copia la chiave che inizia con <code>sk-ant-</code></div>
+          <div id="apiStatus" class="f-hint"></div>
         </div>
       </div>
+      <div class="tip">
+        <div class="tip-ico">💡</div>
+        <div><strong>Non hai la chiave?</strong> Vai su <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>, registrati gratuitamente e copia la chiave che inizia con <code>sk-ant-</code>. È un processo di circa 2 minuti.</div>
+      </div>
+    </div>
 
-      <!-- STEP 2: UPLOAD -->
-      <div class="app-block" id="block-upload">
-        <div class="block-header">
-          <div class="block-num">Passo 2</div>
-          <h2>Carica i tuoi documenti</h2>
-          <p>Puoi caricare uno o più file contemporaneamente. Formati accettati: <strong>PDF, TXT, Word, immagini JPG/PNG</strong></p>
-        </div>
+    <!-- PASSO 2: UPLOAD -->
+    <div class="block" id="block-upload">
+      <div class="block-label">Passo 2</div>
+      <h2>Carica i tuoi documenti</h2>
+      <p class="block-desc">Puoi caricare uno o più file contemporaneamente. Formati accettati: <strong>PDF, TXT, Word, immagini JPG/PNG</strong></p>
 
-        <div class="upload-area" id="uploadZone">
-          <input type="file" id="fileInput" multiple accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg" class="file-input-hidden" />
-          <div class="upload-illustration">
-            <div class="upload-cloud">☁️</div>
-            <div class="upload-arrow-anim">⬆</div>
-          </div>
-          <p class="upload-main-text">Trascina qui i file</p>
-          <p class="upload-or">oppure</p>
-          <button class="btn-upload-pick" onclick="document.getElementById('fileInput').click()">
-            📂 Scegli file dal computer
-          </button>
-          <p class="upload-formats-hint">PDF · TXT · DOC · DOCX · PNG · JPG &nbsp;|&nbsp; Più file contemporaneamente ✓</p>
-        </div>
-
-        <!-- File list -->
-        <div id="fileList" class="file-list hidden"></div>
-
-        <!-- Analyze button -->
-        <div id="analyzeWrapper" class="analyze-wrapper hidden">
-          <button class="btn-analyze" id="analyzeBtn" onclick="startAnalysis()" disabled>
-            <span class="btn-analyze-icon">⚖️</span>
-            <div>
-              <div class="btn-analyze-main">Avvia l'analisi</div>
-              <div class="btn-analyze-sub">Riceverai il report in circa 60 secondi</div>
-            </div>
-            <span class="btn-analyze-arrow">→</span>
-          </button>
-          <button class="btn-reset" onclick="clearAll()">✕ Ricomincia da capo</button>
-        </div>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" multiple accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg" class="file-input-h" />
+        <div class="up-cloud">☁️</div>
+        <span class="up-arr">⬆</span>
+        <p class="up-main">Trascina qui i file</p>
+        <p class="up-or">oppure</p>
+        <button class="btn-pick" onclick="event.stopPropagation();document.getElementById('fileInput').click()">📂 Scegli file dal computer</button>
+        <p class="up-hint">PDF · TXT · DOC · DOCX · PNG · JPG &nbsp;|&nbsp; Più file contemporaneamente ✓</p>
       </div>
 
-      <!-- PROGRESS -->
-      <div class="app-block hidden" id="block-progress">
-        <div class="block-header">
-          <div class="block-num">In corso…</div>
-          <h2>Analisi in corso, attendi</h2>
-          <p>L'intelligenza artificiale sta leggendo i tuoi documenti. Ci vorrà circa un minuto.</p>
-        </div>
-        <div class="progress-visual">
-          <div class="progress-spinner-big"></div>
-          <div class="progress-texts">
-            <div class="progress-main" id="progressTitle">Avvio analisi…</div>
-            <div class="progress-sub" id="progressDesc">Elaborazione in corso</div>
-          </div>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="progressBar"></div>
-        </div>
-        <div class="progress-steps" id="progressLog"></div>
-      </div>
+      <div id="fileList" class="file-list hidden"></div>
 
-      <!-- RESULTS -->
-      <div class="app-block hidden" id="block-results">
-
-        <!-- Verdict top banner -->
-        <div id="verdictBanner" class="verdict-banner hidden"></div>
-
-        <div class="results-topbar">
+      <div id="analyzeWrap" class="analyze-wrap hidden">
+        <button class="btn-analyze" id="analyzeBtn" onclick="startAnalysis()" disabled>
+          <span class="ba-ico">⚖️</span>
           <div>
-            <div class="block-num">Il tuo Report</div>
-            <h2>Analisi completata ✓</h2>
+            <div class="ba-main">Avvia l'analisi</div>
+            <div class="ba-sub">Risultato in circa 60 secondi</div>
           </div>
-          <div class="export-btns">
-            <button class="btn-export" onclick="exportHTML()">⬇ Salva HTML</button>
-            <button class="btn-export" onclick="exportText()">⬇ Salva TXT</button>
-            <button class="btn-export" onclick="window.print()">🖨 Stampa</button>
-          </div>
-        </div>
-
-        <!-- Navigation tabs -->
-        <div class="result-tabs">
-          <button class="rtab active" onclick="switchTab('panoramica', this)">🏠 Panoramica</button>
-          <button class="rtab" onclick="switchTab('legale', this)">⚖️ Legale</button>
-          <button class="rtab" onclick="switchTab('economica', this)">💰 Economia</button>
-          <button class="rtab" onclick="switchTab('rischi', this)">🔍 Rischi</button>
-          <button class="rtab" onclick="switchTab('tabella', this)">📋 Tutti i dati</button>
-        </div>
-
-        <div class="rtab-content active" id="tab-panoramica"></div>
-        <div class="rtab-content" id="tab-legale"></div>
-        <div class="rtab-content" id="tab-economica"></div>
-        <div class="rtab-content" id="tab-rischi"></div>
-        <div class="rtab-content" id="tab-tabella"></div>
-
-        <!-- Bottom CTA -->
-        <div class="results-footer">
-          <button class="btn-new" onclick="clearAll()">+ Analizza un altro documento</button>
-        </div>
-
+          <span class="ba-arr">→</span>
+        </button>
+        <button class="btn-reset" onclick="clearAll()">✕ Ricomincia</button>
       </div>
     </div>
-  </section>
 
-  <!-- ▸ FAQ -->
-  <section class="faq-section">
-    <div class="container">
-      <div class="section-eyebrow">Domande frequenti</div>
-      <h2 class="section-title">Hai dei dubbi?</h2>
-      <div class="faq-grid">
-        <div class="faq-item">
-          <div class="faq-q">È sicuro inserire la mia chiave API?</div>
-          <div class="faq-a">La chiave viene usata solo in questa sessione e non viene mai salvata o trasmessa a terzi. Puoi verificarlo guardando il codice sorgente della pagina.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Che formati di file posso caricare?</div>
-          <div class="faq-a">Puoi caricare PDF, file Word (.doc, .docx), file di testo (.txt) e immagini (JPG, PNG). Puoi anche caricare più file dello stesso avviso contemporaneamente.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">L'analisi sostituisce un avvocato?</div>
-          <div class="faq-a">No. Il report è uno strumento di supporto alla tua valutazione iniziale. Per decisioni di acquisto importanti, consulta sempre un avvocato abilitato.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Se carico più file cosa succede?</div>
-          <div class="faq-a">Il sistema analizza tutti i documenti separatamente e poi li unisce in un unico report, compensando i dati mancanti da un file con quelli presenti negli altri.</div>
+    <!-- PROGRESS -->
+    <div class="block hidden" id="block-progress">
+      <div class="block-label">In corso…</div>
+      <h2>Analisi in corso, attendi</h2>
+      <p class="block-desc">L'intelligenza artificiale sta leggendo i tuoi documenti.</p>
+      <div class="prog-vis">
+        <div class="prog-spin"></div>
+        <div>
+          <div class="prog-main" id="progTitle">Avvio analisi…</div>
+          <div class="prog-sub" id="progDesc">Elaborazione in corso</div>
         </div>
       </div>
+      <div class="prog-track"><div class="prog-fill" id="progBar"></div></div>
+      <div class="prog-log" id="progLog"></div>
     </div>
-  </section>
 
-  <!-- ▸ FOOTER -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">⚖️ REPORT</div>
-      <p>Strumento di analisi aste immobiliari — Powered by Claude AI (Anthropic)</p>
-      <p class="footer-disclaimer">⚠️ Questo strumento è un supporto informativo e non costituisce consulenza legale professionale ai sensi della L. 247/2012. Per qualsiasi decisione di acquisto, consulta un avvocato abilitato.</p>
+    <!-- RESULTS -->
+    <div class="block hidden" id="block-results">
+      <div id="verdictEl" class="hidden"></div>
+
+      <div class="res-top">
+        <div>
+          <div class="block-label">Il tuo Report</div>
+          <h2>Analisi completata ✓</h2>
+        </div>
+        <div class="exp-btns">
+          <button class="btn-exp" onclick="exportHTML()">⬇ Salva HTML</button>
+          <button class="btn-exp" onclick="exportTxt()">⬇ Salva TXT</button>
+          <button class="btn-exp" onclick="window.print()">🖨 Stampa</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('panoramica',this)">🏠 Panoramica</button>
+        <button class="tab" onclick="switchTab('legale',this)">⚖️ Legale</button>
+        <button class="tab" onclick="switchTab('economica',this)">💰 Economia</button>
+        <button class="tab" onclick="switchTab('rischi',this)">🔍 Rischi</button>
+        <button class="tab" onclick="switchTab('tabella',this)">📋 Tutti i dati</button>
+      </div>
+
+      <div class="tab-pane active" id="tp-panoramica"></div>
+      <div class="tab-pane" id="tp-legale"></div>
+      <div class="tab-pane" id="tp-economica"></div>
+      <div class="tab-pane" id="tp-rischi"></div>
+      <div class="tab-pane" id="tp-tabella"></div>
+
+      <div class="res-foot">
+        <button class="btn-new" onclick="clearAll()">+ Analizza un altro documento</button>
+      </div>
     </div>
-  </footer>
 
-  <script src="js/app.js"></script>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-sec">
+  <div class="container">
+    <div class="eyebrow">Domande frequenti</div>
+    <h2 class="sec-title">Hai dei dubbi?</h2>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">È sicuro inserire la mia chiave API?</div>
+        <div class="faq-a">La chiave viene usata solo in questa sessione e non viene mai salvata o trasmessa a terzi. Puoi verificarlo guardando il codice sorgente della pagina.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Che formati di file posso caricare?</div>
+        <div class="faq-a">PDF, Word (.doc, .docx), testo (.txt) e immagini (JPG, PNG). Puoi anche caricare più file dello stesso avviso contemporaneamente.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">L'analisi sostituisce un avvocato?</div>
+        <div class="faq-a">No. Il report è uno strumento di supporto alla valutazione iniziale. Per decisioni di acquisto importanti, consulta sempre un avvocato abilitato.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Se carico più file cosa succede?</div>
+        <div class="faq-a">Il sistema analizza tutti i documenti e li unisce in un unico report, compensando i dati mancanti da un file con quelli presenti negli altri.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="ft-brand">⚖️ REPORT</div>
+  <p>Analisi Aste Immobiliari — Powered by Claude AI (Anthropic)</p>
+  <p class="ft-disc">⚠️ Strumento di supporto informativo. Non costituisce consulenza legale professionale ai sensi della L. 247/2012. Per qualsiasi decisione di acquisto consulta un avvocato abilitato.</p>
+</footer>
+
+<script>
+'use strict';
+const S={apiKey:'',files:[],results:[],unified:null};
+const $=id=>document.getElementById(id);
+
+document.addEventListener('DOMContentLoaded',()=>{
+  setupDrop();
+  $('fileInput').addEventListener('change',e=>addFiles(Array.from(e.target.files)));
+});
+
+function verifyApiKey(){
+  const k=$('apiKey').value.trim();
+  const st=$('apiStatus');
+  if(!k.startsWith('sk-ant')){
+    st.className='f-hint err';
+    st.textContent='✕ Chiave non valida. Deve iniziare con sk-ant-…';
+    return;
+  }
+  S.apiKey=k;
+  st.className='f-hint ok';
+  st.textContent='✓ Chiave configurata! Ora carica i documenti.';
+  updateBtn();
+}
+
+function setupDrop(){
+  const z=$('uploadZone');
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag-over');});
+  z.addEventListener('dragleave',()=>z.classList.remove('drag-over'));
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag-over');addFiles(Array.from(e.dataTransfer.files));});
+}
+
+function addFiles(files){
+  const ok=['pdf','txt','doc','docx','png','jpg','jpeg'];
+  for(const f of files){
+    const ext=f.name.split('.').pop().toLowerCase();
+    if(!ok.includes(ext)){alert('Formato non supportato: '+f.name);continue;}
+    if(S.files.find(x=>x.name===f.name))continue;
+    S.files.push({id:'f'+Date.now()+Math.random().toString(36).slice(2,6),file:f,name:f.name,size:f.size,type:ext,text:null,status:'pending'});
+  }
+  renderList();updateBtn();
+}
+
+function removeFile(id){S.files=S.files.filter(f=>f.id!==id);renderList();updateBtn();}
+
+function clearAll(){
+  S.files=[];S.results=[];S.unified=null;
+  renderList();updateBtn();
+  $('fileInput').value='';
+  $('block-progress').classList.add('hidden');
+  $('block-results').classList.add('hidden');
+  $('analyzeWrap').classList.add('hidden');
+  window.scrollTo({top:$('inizia').offsetTop-80,behavior:'smooth'});
+}
+
+function renderList(){
+  const list=$('fileList'),wrap=$('analyzeWrap');
+  if(!S.files.length){list.classList.add('hidden');list.innerHTML='';wrap.classList.add('hidden');return;}
+  list.classList.remove('hidden');wrap.classList.remove('hidden');
+  list.innerHTML=S.files.map(f=>`
+    <div class="file-item" id="fi_${f.id}">
+      <div class="f-ico">${ico(f.type)}</div>
+      <div class="f-meta">
+        <div class="f-name">${esc(f.name)}</div>
+        <div class="f-size">${fmtSz(f.size)}</div>
+      </div>
+      <span class="f-badge ${f.status}" id="fb_${f.id}">${blabel(f.status)}</span>
+      <button class="f-del" onclick="removeFile('${f.id}')">✕</button>
+    </div>`).join('');
+}
+
+function setStat(id,s){
+  const f=S.files.find(f=>f.id===id);if(f)f.status=s;
+  const el=$('fb_'+id);if(el){el.className='f-badge '+s;el.textContent=blabel(s);}
+}
+function ico(e){return{pdf:'📕',txt:'📄',doc:'📝',docx:'📝',png:'🖼️',jpg:'🖼️',jpeg:'🖼️'}[e]||'📄';}
+function blabel(s){return{pending:'In attesa',processing:'Analisi…',done:'✓ OK',error:'✕ Errore'}[s]||s;}
+function updateBtn(){$('analyzeBtn').disabled=!S.files.length||!S.apiKey;}
+
+// ── ANALYSIS ──
+async function startAnalysis(){
+  if(!S.apiKey){alert('Inserisci prima la chiave API.');return;}
+  if(!S.files.length){alert('Carica almeno un documento.');return;}
+  $('block-progress').classList.remove('hidden');
+  $('block-results').classList.add('hidden');
+  $('analyzeBtn').disabled=true;
+  $('block-progress').scrollIntoView({behavior:'smooth',block:'center'});
+  S.results=[];
+  setP(5,'Avvio analisi…',S.files.length+' documento/i da elaborare');
+
+  for(let i=0;i<S.files.length;i++){
+    const f=S.files[i];setStat(f.id,'processing');log('📂 Lettura: '+f.name,'info');
+    try{f.text=await readFile(f);log('✓ Testo estratto ('+f.text.length+' car.)','ok');}
+    catch(e){f.text='[Lettura parziale: '+f.name+']';log('⚠ Lettura parziale: '+f.name,'warn');}
+    setP(5+Math.round((i+1)/S.files.length*25));
+  }
+
+  for(let i=0;i<S.files.length;i++){
+    const f=S.files[i];
+    $('progTitle').textContent='Analisi '+(i+1)+' di '+S.files.length;
+    $('progDesc').textContent=f.name;
+    log('⚖️ Analisi legale: '+f.name+'…','info');
+    try{
+      const r=await analyze(f.text,f.name);
+      S.results.push({fileId:f.id,name:f.name,data:r});
+      setStat(f.id,'done');log('✓ Analisi completata: '+f.name,'ok');
+    }catch(e){setStat(f.id,'error');log('✕ Errore: '+e.message,'warn');console.error(e);}
+    setP(30+Math.round((i+1)/S.files.length*55));
+  }
+
+  if(!S.results.length){
+    $('progTitle').textContent='❌ Analisi fallita';
+    $('progDesc').textContent='Verifica la chiave API e il formato dei file.';
+    $('analyzeBtn').disabled=false;return;
+  }
+
+  log('🔗 Consolidamento report…','info');
+  $('progTitle').textContent='Consolidamento…';$('progDesc').textContent='Unificazione di tutti i dati';
+  try{
+    S.unified=S.results.length>1?await merge(S.results):S.results[0].data;
+    setP(100);log('✅ Report pronto!','ok');
+    setTimeout(()=>{
+      $('block-progress').classList.add('hidden');
+      render(S.unified);
+      $('block-results').classList.remove('hidden');
+      $('block-results').scrollIntoView({behavior:'smooth'});
+    },700);
+  }catch(e){
+    log('⚠ Merge parziale: '+e.message,'warn');
+    S.unified=S.results[0].data;
+    render(S.unified);
+    $('block-progress').classList.add('hidden');
+    $('block-results').classList.remove('hidden');
+  }
+  $('analyzeBtn').disabled=false;
+}
+
+function readFile(f){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    if(f.type==='txt'){r.onload=e=>res(e.target.result);r.onerror=()=>rej(new Error('lettura fallita'));r.readAsText(f.file,'utf-8');}
+    else if(['png','jpg','jpeg'].includes(f.type)){r.onload=e=>res('[IMG:'+e.target.result+']');r.onerror=()=>rej(new Error('img fallita'));r.readAsDataURL(f.file);}
+    else{
+      r.onload=e=>{
+        const a=new Uint8Array(e.target.result);let t='';
+        for(let i=0;i<a.length;i++){const c=a[i];if((c>=32&&c<=126)||c===10||c===13)t+=String.fromCharCode(c);}
+        const lines=t.split('\n').filter(l=>l.trim().length>6&&/[a-zA-ZÀ-ÿ]{3,}/.test(l));
+        const cl=lines.join('\n').replace(/\s{3,}/g,' ').trim();
+        res(cl.length>80?cl:'[Testo limitato. Per risultati migliori usa file .txt]');
+      };
+      r.onerror=()=>rej(new Error('lettura binaria fallita'));
+      r.readAsArrayBuffer(f.file);
+    }
+  });
+}
+
+async function claude(messages,system){
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':S.apiKey,'anthropic-version':'2023-06-01'},
+    body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4096,system,messages})
+  });
+  if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+resp.status);}
+  const d=await resp.json();
+  return d.content?.map(b=>b.text||'').join('')||'';
+}
+
+const SYS=`Sei un avvocato esperto in diritto immobiliare ed esecuzioni forzate con 20 anni di esperienza in Italia. Analizza l'avviso di vendita e restituisci SOLO un JSON valido (null per dati mancanti):
+{"procedura":{"tipo":null,"tribunale":null,"rge":null,"giudice":null,"delegato":null,"data_pubblicazione":null},"immobile":{"tipologia":null,"ubicazione":null,"superficie_catastale":null,"foglio":null,"particella":null,"subalterno":null,"categoria_catastale":null,"rendita_catastale":null,"descrizione":null},"economico":{"prezzo_base_prima_asta":null,"prezzo_base_seconda_asta":null,"offerta_minima":null,"valore_stima":null,"rilanci_minimi":null,"cauzione":null,"sconto_percentuale":null},"vincoli":{"ipoteche":null,"trascrizioni":null,"altri_gravami":null,"occupanti":null,"situazione_giuridica_occupanti":null},"modalita_vendita":{"data_prima_asta":null,"data_seconda_asta":null,"termine_offerte":null,"modalita_offerta":null,"modalita_pagamento":null},"analisi_legale":{"completezza_490cpc":null,"criticita":[],"elementi_attenzione":[],"conformita_normativa":null},"rischi":[],"opportunita":[],"valutazione_economica":null,"spese_stimate":null,"giudizio":{"livello_rischio":null,"convenienza":null,"sintesi":null,"raccomandazione":null}}
+Sii preciso. Usa null (non stringa vuota) per dati assenti. Restituisci SOLO il JSON.`;
+
+async function analyze(text,name){
+  const isImg=text.startsWith('[IMG:');
+  let content;
+  if(isImg){
+    const b64=text.replace('[IMG:','').replace(']','');
+    const[meta,data]=b64.split(',');
+    const mt=meta.match(/data:([^;]+)/)?.[1]||'image/jpeg';
+    content=[{type:'image',source:{type:'base64',media_type:mt,data}},{type:'text',text:'Analizza questo avviso (file: '+name+').'}];
+  }else{
+    content='Analizza il seguente avviso (file: '+name+'):\n\n'+text.slice(0,15000);
+  }
+  const raw=await claude([{role:'user',content}],SYS);
+  try{return JSON.parse(raw.replace(/```json|```/g,'').trim());}
+  catch(e){throw new Error('JSON non valido: '+e.message);}
+}
+
+async function merge(results){
+  const prompt='Hai analizzato '+results.length+' documenti della stessa procedura.\n\n'+
+    results.map((r,i)=>'--- Doc '+(i+1)+': '+r.name+' ---\n'+JSON.stringify(r.data,null,2)).join('\n\n')+
+    '\n\nCrea un JSON unificato con la stessa struttura, compensando i dati mancanti da un file con quelli degli altri. Aggrega rischi e opportunità. Aggiorna la sintesi. SOLO JSON valido.';
+  try{
+    const raw=await claude([{role:'user',content:prompt}],'Sei un avvocato esperto. Restituisci SOLO JSON valido con la stessa struttura.');
+    return JSON.parse(raw.replace(/```json|```/g,'').trim());
+  }catch(e){return localMerge(results.map(r=>r.data));}
+}
+
+function localMerge(objs){
+  const r={};
+  const keys=[...new Set(objs.flatMap(o=>Object.keys(o||{})))];
+  for(const k of keys){
+    const vals=objs.map(o=>o?.[k]);
+    if(vals.some(v=>v!==null&&!Array.isArray(v)&&typeof v==='object'))r[k]=localMerge(vals.filter(v=>v!==null&&typeof v==='object'&&!Array.isArray(v)));
+    else if(vals.some(Array.isArray))r[k]=[...new Set(vals.filter(Array.isArray).flat())];
+    else r[k]=vals.find(v=>v!==null&&v!==undefined&&v!=='')?? null;
+  }
+  return r;
+}
+
+// ── RENDER ──
+function render(d){
+  renderVerdict(d);
+  $('tp-panoramica').innerHTML=buildPano(d);
+  $('tp-legale').innerHTML=buildLegal(d);
+  $('tp-economica').innerHTML=buildEco(d);
+  $('tp-rischi').innerHTML=buildRisk(d);
+  $('tp-tabella').innerHTML=buildTbl(d);
+  switchTab('panoramica',document.querySelector('.tab'));
+}
+
+function renderVerdict(d){
+  const g=d.giudizio||{};
+  const risk=g.livello_rischio||'MEDIO';
+  const cls={BASSO:'low',MEDIO:'mid',ALTO:'high'}[risk]||'mid';
+  const ico2={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[risk]||'⚠️';
+  const el=$('verdictEl');
+  el.className='verdict '+cls;
+  el.innerHTML=`<div class="v-ico">${ico2}</div><div><div class="v-ey">Giudizio finale</div><div class="v-title">Rischio ${risk} — Convenienza ${g.convenienza||'N/D'}</div><div class="v-desc">${esc(g.sintesi||'Analisi completata.')}</div></div>`;
+  el.classList.remove('hidden');
+}
+
+function icard(label,val,big,gn,full){
+  const cls=val?(big?'if-val big':gn?'if-val gn':'if-val'):'if-val nd';
+  return`<div class="info-field${full?' if-full':''}"><div class="if-lbl">${esc(label)}</div><div class="${cls}">${val?esc(String(val)):'N/D'}</div></div>`;
+}
+
+function al(type,icon,text){return`<div class="alert ${type}"><span class="al-ico">${icon}</span><div class="al-txt">${esc(text)}</div></div>`;}
+
+function buildPano(d){
+  const p=d.procedura||{},im=d.immobile||{},ec=d.economico||{},g=d.giudizio||{};
+  const rc={BASSO:'opp',MEDIO:'info',ALTO:'risk'}[g.livello_rischio]||'info';
+  const ri={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️';
+  return`<div class="prose">
+    <h3>📋 Procedura</h3>
+    <div class="icard icard-grid">
+      ${icard('Tipo procedura',p.tipo)}${icard('Tribunale',p.tribunale)}
+      ${icard('Numero RGE',p.rge)}${icard('Giudice',p.giudice)}
+      ${icard('Professionista delegato',p.delegato,false,false,true)}
+      ${icard('Data pubblicazione',p.data_pubblicazione)}
+    </div>
+    <h3>🏠 Immobile</h3>
+    <div class="icard icard-grid">
+      ${icard('Tipologia',im.tipologia)}${icard('Superficie',im.superficie_catastale)}
+      ${icard('Indirizzo',im.ubicazione,false,false,true)}
+      ${icard('Categoria catastale',im.categoria_catastale)}${icard('Rendita',im.rendita_catastale)}
+    </div>
+    ${im.descrizione?al('info','📝',im.descrizione):''}
+    <h3>💰 Prezzi</h3>
+    <div class="icard icard-grid">
+      ${icard('Valore di stima',ec.valore_stima,true)}${icard('Prezzo base asta',ec.prezzo_base_prima_asta,true)}
+      ${icard('Sconto sul valore',ec.sconto_percentuale,false,true)}${icard('Cauzione',ec.cauzione)}
+    </div>
+    <h3>⚖️ Valutazione sintetica</h3>
+    ${al(rc,ri,'<strong>Rischio '+g.livello_rischio+' — Convenienza '+(g.convenienza||'?')+'</strong><br/>'+esc(g.sintesi||'')+'<br/><br/><strong>Raccomandazione:</strong> '+esc(g.raccomandazione||''))}
+  </div>`;
+}
+
+function buildLegal(d){
+  const al2=d.analisi_legale||{},mo=d.modalita_vendita||{},vin=d.vincoli||{};
+  return`<div class="prose">
+    <h3>📜 Verifica Art. 490 c.p.c.</h3>
+    ${al('info','⚖️',al2.completezza_490cpc||'Verifica non disponibile.')}
+    <div class="icard"><div class="if-lbl">Conformità normativa</div><div class="if-val">${esc(al2.conformita_normativa||'N/D')}</div></div>
+    <h3>📅 Modalità di vendita</h3>
+    <div class="icard icard-grid">
+      ${icard('Data prima asta',mo.data_prima_asta)}${icard('Data seconda asta',mo.data_seconda_asta)}
+      ${icard('Termine offerte',mo.termine_offerte,false,false,true)}
+      ${icard('Modalità offerta',mo.modalita_offerta,false,false,true)}
+      ${icard('Modalità pagamento',mo.modalita_pagamento,false,false,true)}
+    </div>
+    <h3>🏗️ Vincoli e oneri</h3>
+    <div class="icard icard-grid">
+      ${icard('Ipoteche',vin.ipoteche,false,false,true)}
+      ${icard('Trascrizioni',vin.trascrizioni,false,false,true)}
+      ${icard('Altri gravami',vin.altri_gravami,false,false,true)}
+      ${icard('Occupanti',vin.occupanti,false,false,true)}
+      ${icard('Situazione giuridica',vin.situazione_giuridica_occupanti,false,false,true)}
+    </div>
+    ${al2.criticita?.length?'<h3>🚨 Criticità</h3>'+al2.criticita.map(c=>al('risk','⚠️',c)).join(''):''}
+    ${al2.elementi_attenzione?.length?'<h3>👁️ Elementi di attenzione</h3>'+al2.elementi_attenzione.map(e=>al('warn','👉',e)).join(''):''}
+  </div>`;
+}
+
+function buildEco(d){
+  const ec=d.economico||{};
+  return`<div class="prose">
+    <h3>💰 Prezzi e offerte</h3>
+    <div class="icard icard-grid">
+      ${icard('Valore di stima',ec.valore_stima,true)}${icard('Prezzo base prima asta',ec.prezzo_base_prima_asta,true)}
+      ${icard('Prezzo base seconda asta',ec.prezzo_base_seconda_asta)}${icard('Offerta minima',ec.offerta_minima)}
+      ${icard('Sconto sulla stima',ec.sconto_percentuale,false,true)}${icard('Rilanci minimi',ec.rilanci_minimi)}
+      ${icard('Cauzione da versare',ec.cauzione,false,false,true)}
+    </div>
+    <h3>📈 Analisi del valore</h3>
+    ${al('info','🔍',d.valutazione_economica||'Analisi non disponibile.')}
+    <h3>🧾 Spese aggiuntive stimate</h3>
+    ${al('warn','💡',d.spese_stimate||'Considera: imposte di registro o IVA, onorari notarili, eventuali spese per sgombero occupanti, costi di ristrutturazione.')}
+  </div>`;
+}
+
+function buildRisk(d){
+  const r=d.rischi||[],o=d.opportunita||[],g=d.giudizio||{};
+  const rc={BASSO:'opp',MEDIO:'info',ALTO:'risk'}[g.livello_rischio]||'info';
+  const ri={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️';
+  return`<div class="prose">
+    <h3>🔴 Rischi da considerare</h3>
+    ${r.length?r.map(x=>al('risk','⚠️',x)).join(''):al('opp','✅','Nessun rischio significativo identificato.')}
+    <h3>🟢 Opportunità</h3>
+    ${o.length?o.map(x=>al('opp','💚',x)).join(''):'<p>Nessuna opportunità specifica identificata.</p>'}
+    <h3>⚖️ Raccomandazione finale</h3>
+    ${al(rc,ri,g.raccomandazione||'Consulta sempre un avvocato abilitato prima di procedere.')}
+  </div>`;
+}
+
+function buildTbl(d){
+  const p=d.procedura||{},im=d.immobile||{},ec=d.economico||{};
+  const vin=d.vincoli||{},mo=d.modalita_vendita||{},al3=d.analisi_legale||{},g=d.giudizio||{};
+  const secs=[
+    {cat:'Dati Procedura',rows:[['Tipo procedura',p.tipo],['Tribunale',p.tribunale],['Numero RGE',p.rge],["Giudice dell'esecuzione",p.giudice],['Professionista delegato',p.delegato],['Data pubblicazione',p.data_pubblicazione]]},
+    {cat:'Immobile',rows:[['Tipologia',im.tipologia],['Ubicazione',im.ubicazione],['Superficie catastale',im.superficie_catastale],['Foglio/Particella/Sub.',[im.foglio,im.particella,im.subalterno].filter(Boolean).join(' / ')||null],['Categoria catastale',im.categoria_catastale],['Rendita catastale',im.rendita_catastale]]},
+    {cat:'Aspetti Economici',rows:[['Valore di stima',ec.valore_stima],['Prezzo base 1ª asta',ec.prezzo_base_prima_asta],['Prezzo base 2ª asta',ec.prezzo_base_seconda_asta],['Offerta minima',ec.offerta_minima],['Sconto sulla stima',ec.sconto_percentuale],['Rilanci minimi',ec.rilanci_minimi],['Cauzione',ec.cauzione]]},
+    {cat:'Vincoli e Oneri',rows:[['Ipoteche',vin.ipoteche],['Trascrizioni',vin.trascrizioni],['Altri gravami',vin.altri_gravami],['Occupanti',vin.occupanti],['Situazione giuridica',vin.situazione_giuridica_occupanti]]},
+    {cat:'Modalità Vendita',rows:[['Data prima asta',mo.data_prima_asta],['Data seconda asta',mo.data_seconda_asta],['Termine offerte',mo.termine_offerte],['Modalità offerta',mo.modalita_offerta],['Pagamento',mo.modalita_pagamento]]},
+    {cat:'Analisi Legale',rows:[['Conformità 490 c.p.c.',al3.conformita_normativa],['Criticità',(al3.criticita||[]).join(' • ')||null],['Elementi attenzione',(al3.elementi_attenzione||[]).join(' • ')||null]]},
+    {cat:'Giudizio',rows:[['Livello di rischio',g.livello_rischio],['Convenienza',g.convenienza],['Sintesi',g.sintesi],['Raccomandazione',g.raccomandazione],['Rischi',(d.rischi||[]).join(' • ')||null],['Opportunità',(d.opportunita||[]).join(' • ')||null]]},
+  ];
+  let rows='';
+  for(const s of secs){
+    for(let i=0;i<s.rows.length;i++){
+      const[k,v2]=s.rows[i];
+      const isRisk=s.cat==='Giudizio'&&k==='Livello di rischio';
+      const valCls=v2?(isRisk?(v2==='ALTO'?'dt-risk':v2==='BASSO'?'dt-good':'dt-val'):'dt-val'):'dt-nd';
+      rows+=`<tr>${i===0?`<td class="dt-cat" rowspan="${s.rows.length}">${esc(s.cat)}</td>`:''}<td class="dt-key">${esc(k)}</td><td class="${valCls}">${v2?esc(String(v2)):'N/D — dato non presente'}</td></tr>`;
+    }
+  }
+  return`<div class="tbl-wrap"><table class="dtbl"><thead><tr><th style="width:130px">Categoria</th><th style="width:190px">Dato</th><th>Valore / Dettaglio</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function switchTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.tab[onclick*="\''+name+'\'"]')?.classList.add('active');
+  $('tp-'+name)?.classList.add('active');
+}
+
+// ── EXPORT ──
+function exportHTML(){
+  if(!S.unified)return;
+  const d=S.unified,g=d.giudizio||{};
+  const rc={BASSO:'#16a34a',MEDIO:'#d97706',ALTO:'#dc2626'}[g.livello_rischio]||'#6b7280';
+  const html=`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"/><title>REPORT — Analisi Asta ${new Date().toLocaleDateString('it-IT')}</title>
+<style>body{font-family:system-ui,sans-serif;max-width:900px;margin:40px auto;padding:0 20px;color:#111;line-height:1.7}
+h1{font-size:26px;font-weight:800;margin-bottom:4px}h2{font-size:19px;font-weight:700;margin:28px 0 10px;border-bottom:2px solid #e5e7eb;padding-bottom:7px}
+.meta{color:#6b7280;font-size:13px;margin-bottom:28px}.v{padding:18px 22px;border-radius:10px;border:2px solid ${rc};background:${rc}18;margin:22px 0;display:flex;gap:14px;align-items:flex-start}
+.v-t{font-size:19px;font-weight:800;color:${rc}}.v-d{font-size:14px;color:#374151;margin-top:5px}
+.a{padding:12px 16px;border-radius:8px;margin:8px 0;font-size:14px;display:flex;gap:10px}
+.risk{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d}.opp{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d}.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a5f}.warn{background:#fffbeb;border:1px solid #fde68a;color:#78350f}
+table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0f1117;color:white;padding:10px 13px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+td{padding:9px 13px;border-bottom:1px solid #e5e7eb;vertical-align:top}tr:hover td{background:#f8f9fc}
+.cat{font-weight:800;font-size:11px;text-transform:uppercase;color:#2563eb;background:#eff6ff;letter-spacing:.06em}
+@media print{body{margin:10px}}</style></head><body>
+<h1>⚖️ REPORT — Analisi Avviso di Vendita Immobiliare</h1>
+<div class="meta">Generato il ${new Date().toLocaleString('it-IT')} | Documenti analizzati: ${S.results.length}</div>
+<div class="v"><div style="font-size:40px">${{BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️'}</div><div><div class="v-t">Rischio ${g.livello_rischio||'?'} — Convenienza ${g.convenienza||'?'}</div><div class="v-d">${esc(g.sintesi||'')}</div></div></div>
+<h2>Analisi Legale (Art. 490 c.p.c.)</h2><div class="a info"><span>📜</span><span>${esc(d.analisi_legale?.completezza_490cpc||'N/D')}</span></div>
+${(d.analisi_legale?.criticita||[]).map(c=>`<div class="a risk"><span>⚠️</span><span>${esc(c)}</span></div>`).join('')}
+<h2>Valutazione Economica</h2><div class="a info"><span>🔍</span><span>${esc(d.valutazione_economica||'N/D')}</span></div><div class="a warn"><span>💡</span><span>${esc(d.spese_stimate||'N/D')}</span></div>
+<h2>Rischi</h2>${(d.rischi||[]).map(r=>`<div class="a risk"><span>🔴</span><span>${esc(r)}</span></div>`).join('')||'<p>Nessun rischio identificato.</p>'}
+<h2>Opportunità</h2>${(d.opportunita||[]).map(o=>`<div class="a opp"><span>🟢</span><span>${esc(o)}</span></div>`).join('')||'<p>Nessuna opportunità.</p>'}
+<h2>Tabella Dati Principali</h2>${buildTbl(d).replace(/class="tbl-wrap"/g,'')}
+<h2>Raccomandazione</h2><div class="a info"><span>⚖️</span><span>${esc(g.raccomandazione||'Consulta un avvocato abilitato.')}</span></div>
+<hr style="margin:36px 0;border:none;border-top:1px solid #e5e7eb"/><p style="font-size:11px;color:#9ca3af">⚠️ Non costituisce consulenza legale professionale ai sensi della L. 247/2012.</p>
+</body></html>`;
+  dl('report_asta.html',html,'text/html');
+}
+
+function exportTxt(){
+  if(!S.unified)return;
+  const d=S.unified,p=d.procedura||{},im=d.immobile||{},ec=d.economico||{};
+  const vin=d.vincoli||{},mo=d.modalita_vendita||{},g=d.giudizio||{},al4=d.analisi_legale||{};
+  const n=v=>v||'N/D';
+  const txt=`══════════════════════════════════════════════════
+  REPORT — Analisi Avviso di Vendita Immobiliare
+  Data: ${new Date().toLocaleString('it-IT')}
+  Documenti: ${S.results.length}
+══════════════════════════════════════════════════
+
+GIUDIZIO:     Rischio ${n(g.livello_rischio)} — Convenienza ${n(g.convenienza)}
+SINTESI:      ${n(g.sintesi)}
+RACCOMAND.:   ${n(g.raccomandazione)}
+
+PROCEDURA:    ${n(p.tipo)} | ${n(p.tribunale)} | RGE ${n(p.rge)}
+GIUDICE:      ${n(p.giudice)} | Delegato: ${n(p.delegato)}
+PUBBLICAZ.:   ${n(p.data_pubblicazione)}
+
+IMMOBILE:     ${n(im.tipologia)} — ${n(im.ubicazione)}
+SUPERFICIE:   ${n(im.superficie_catastale)} | Cat. ${n(im.categoria_catastale)} | Rendita ${n(im.rendita_catastale)}
+CATASTO:      Fg.${n(im.foglio)} / Part.${n(im.particella)} / Sub.${n(im.subalterno)}
+
+VALORE STIMA: ${n(ec.valore_stima)}
+BASE 1ª ASTA: ${n(ec.prezzo_base_prima_asta)} (sconto ${n(ec.sconto_percentuale)})
+BASE 2ª ASTA: ${n(ec.prezzo_base_seconda_asta)}
+CAUZIONE:     ${n(ec.cauzione)}
+
+IPOTECHE:     ${n(vin.ipoteche)}
+TRASCRIZIONI: ${n(vin.trascrizioni)}
+OCCUPANTI:    ${n(vin.occupanti)}
+
+DATA 1ª ASTA: ${n(mo.data_prima_asta)}
+DATA 2ª ASTA: ${n(mo.data_seconda_asta)}
+TERMINE OFF.: ${n(mo.termine_offerte)}
+
+RISCHI:
+${(d.rischi||[]).map((r,i)=>'  '+(i+1)+'. '+r).join('\n')||'  Nessun rischio identificato.'}
+
+OPPORTUNITÀ:
+${(d.opportunita||[]).map((o,i)=>'  '+(i+1)+'. '+o).join('\n')||'  Nessuna opportunità.'}
+
+══════════════════════════════════════════════════
+  Non costituisce consulenza legale ex L. 247/2012
+══════════════════════════════════════════════════`.trim();
+  dl('report_asta.txt',txt,'text/plain');
+}
+
+function dl(name,content,mime){
+  const b=new Blob([content],{type:mime+';charset=utf-8'});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement('a');
+  a.href=u;a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+
+// ── HELPERS ──
+function setP(pct,title,desc){
+  $('progBar').style.width=pct+'%';
+  if(title)$('progTitle').textContent=title;
+  if(desc)$('progDesc').textContent=desc;
+}
+function log(msg,type){
+  const el=document.createElement('div');
+  el.className='plog '+(type||'info');
+  el.textContent=msg;
+  $('progLog').appendChild(el);
+  $('progLog').scrollTop=$('progLog').scrollHeight;
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtSz(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
+</script>
 </body>
 </html>
