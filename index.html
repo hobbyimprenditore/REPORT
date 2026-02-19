@@ -581,8 +581,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('fileInput').addEventListener('change',e=>addFiles(Array.from(e.target.files)));
 });
 
-function updateBtn(){$('analyzeBtn').disabled=!S.files.length;}
-
 function setupDrop(){
   const z=$('uploadZone');
   z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag-over');});
@@ -635,7 +633,8 @@ function setStat(id,s){
 }
 function ico(e){return{pdf:'📕',txt:'📄',doc:'📝',docx:'📝',png:'🖼️',jpg:'🖼️',jpeg:'🖼️'}[e]||'📄';}
 function blabel(s){return{pending:'In attesa',processing:'Analisi…',done:'✓ OK',error:'✕ Errore'}[s]||s;}
-function updateBtn(){$('analyzeBtn').disabled=!S.files.length||!S.apiKey;}
+function fmtSz(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
+function updateBtn(){$('analyzeBtn').disabled=!S.files.length;}
 
 // ── ANALYSIS ──
 async function startAnalysis(){
