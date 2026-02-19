@@ -1008,4 +1008,10 @@ function log(msg,type){
   const el=document.createElement('div');
   el.className='plog '+(type||'info');
   el.textContent=msg;
-  $('pr
+  $('progLog').appendChild(el);
+  $('progLog').scrollTop=$('progLog').scrollHeight;
+}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>
