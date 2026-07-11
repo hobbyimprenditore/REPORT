@@ -296,6 +296,7 @@
       .res-top{flex-direction:column;align-items:flex-start}
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
 
@@ -575,6 +576,7 @@
 const WORKER_URL = 'https://silent-leaf-495dhobbyimprenditore.hobbyimprenditore.workers.dev/'; // ← Sostituisci con l'URL del tuo Cloudflare Worker
 const S={files:[],results:[],unified:null};
 const $=id=>document.getElementById(id);
+if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}
 
 document.addEventListener('DOMContentLoaded',()=>{
   setupDrop();
@@ -622,14 +624,14 @@ function renderList(){
         <div class="f-name">${esc(f.name)}</div>
         <div class="f-size">${fmtSz(f.size)}</div>
       </div>
-      <span class="f-badge ${f.status}" id="fb_${f.id}">${blabel(f.status)}</span>
+      <span class="f-badge ${f.status}" id="fb_${f.id}" title="${f.errMsg?esc(f.errMsg):''}">${blabel(f.status)}</span>
       <button class="f-del" onclick="removeFile('${f.id}')">✕</button>
     </div>`).join('');
 }
 
 function setStat(id,s){
   const f=S.files.find(f=>f.id===id);if(f)f.status=s;
-  const el=$('fb_'+id);if(el){el.className='f-badge '+s;el.textContent=blabel(s);}
+  const el=$('fb_'+id);if(el){el.className='f-badge '+s;el.textContent=blabel(s);el.title=(f&&f.errMsg)?f.errMsg:'';}
 }
 function ico(e){return{pdf:'📕',txt:'📄',doc:'📝',docx:'📝',png:'🖼️',jpg:'🖼️',jpeg:'🖼️'}[e]||'📄';}
 function blabel(s){return{pending:'In attesa',processing:'Analisi…',done:'✓ OK',error:'✕ Errore'}[s]||s;}
@@ -662,7 +664,7 @@ async function startAnalysis(){
       const r=await analyze(f.text,f.name);
       S.results.push({fileId:f.id,name:f.name,data:r});
       setStat(f.id,'done');log('✓ Analisi completata: '+f.name,'ok');
-    }catch(e){setStat(f.id,'error');log('✕ Errore: '+e.message,'warn');console.error(e);}
+    }catch(e){f.errMsg=e.message;setStat(f.id,'error');log('✕ Errore: '+e.message,'warn');console.error(e);}
     setP(30+Math.round((i+1)/S.files.length*55));
   }
 
@@ -698,13 +700,42 @@ function readFile(f){
     const r=new FileReader();
     if(f.type==='txt'){r.onload=e=>res(e.target.result);r.onerror=()=>rej(new Error('lettura fallita'));r.readAsText(f.file,'utf-8');}
     else if(['png','jpg','jpeg'].includes(f.type)){r.onload=e=>res('[IMG:'+e.target.result+']');r.onerror=()=>rej(new Error('img fallita'));r.readAsDataURL(f.file);}
+    else if(f.type==='pdf'){
+      r.onload=async e=>{
+        try{
+          if(!window.pdfjsLib)throw new Error('PDF.js non caricato');
+          const pdf=await pdfjsLib.getDocument({data:e.target.result}).promise;
+          let full='';
+          const maxPages=Math.min(pdf.numPages,60); // limite di sicurezza per PDF molto lunghi
+          for(let p=1;p<=maxPages;p++){
+            const page=await pdf.getPage(p);
+            const content=await page.getTextContent();
+            full+=content.items.map(it=>it.str).join(' ')+'\n';
+          }
+          full=full.replace(/\s{3,}/g,' ').trim();
+          if(full.length>80){res(full);}
+          else{
+            // Nessun testo estraibile: probabile PDF scansionato (immagine). Convertiamo la prima pagina in immagine per l'analisi visiva.
+            const page=await pdf.getPage(1);
+            const viewport=page.getViewport({scale:1.5});
+            const canvas=document.createElement('canvas');
+            canvas.width=viewport.width;canvas.height=viewport.height;
+            await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+            res('[IMG:'+canvas.toDataURL('image/jpeg',0.85)+']');
+          }
+        }catch(err){rej(new Error('lettura PDF fallita: '+err.message));}
+      };
+      r.onerror=()=>rej(new Error('lettura binaria fallita'));
+      r.readAsArrayBuffer(f.file);
+    }
     else{
+      // doc/docx: nessun parser dedicato, fallback a lettura testuale grezza
       r.onload=e=>{
         const a=new Uint8Array(e.target.result);let t='';
         for(let i=0;i<a.length;i++){const c=a[i];if((c>=32&&c<=126)||c===10||c===13)t+=String.fromCharCode(c);}
         const lines=t.split('\n').filter(l=>l.trim().length>6&&/[a-zA-ZÀ-ÿ]{3,}/.test(l));
         const cl=lines.join('\n').replace(/\s{3,}/g,' ').trim();
-        res(cl.length>80?cl:'[Testo limitato. Per risultati migliori usa file .txt]');
+        res(cl.length>80?cl:'[Testo limitato. Per risultati migliori usa file .txt o .pdf]');
       };
       r.onerror=()=>rej(new Error('lettura binaria fallita'));
       r.readAsArrayBuffer(f.file);
