@@ -355,6 +355,16 @@
     <div class="topbar-links">
       <a href="#come-funziona">Come funziona</a>
       <a href="#inizia" class="topbar-cta" id="ctaInizia" onclick="return topCtaClick(event)">Inizia →</a>
+      <!-- Display Crediti -->
+<div id="creditPanel" class="hidden" style="display:flex;align-items:center;gap:8px;margin-right:8px">
+  <div id="creditiDisplay" style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--ink-mid);display:flex;align-items:center;gap:6px">
+    <span>🪙</span>
+    <span id="creditiCount">0</span>
+    <span style="font-weight:400;color:var(--ink-soft)">crediti</span>
+  </div>
+  <button onclick="apriStorico()" title="Storico analisi" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-mid);cursor:pointer;white-space:nowrap">📊 Storico</button>
+  <button onclick="apriPannelloAdminCrediti()" id="btnAdminCrediti" title="Ricarica crediti (Admin)" style="display:none;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:8px;padding:6px 12px;font-family:var(--font);font-size:13px;font-weight:700;color:white;cursor:pointer;white-space:nowrap">👑 Ricarica</button>
+</div>
       <div class="user-badge hidden" id="userBadge">
         <span class="u-email" id="userEmail"></span>
         <a href="https://www.paypal.com/donate/?hosted_button_id=VT9GSFLFTN3V6" target="_blank" class="u-donate" title="Sostieni il progetto">❤️ Dona</a>
