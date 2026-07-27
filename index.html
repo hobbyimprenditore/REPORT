@@ -721,6 +721,10 @@
 
 <script>
 'use strict';
+  // ── CREDITI & STORICO ──
+let creditiDisponibili = 0;
+const COSTO_ANALISI = 1; // crediti consumati per ogni analisi
+  
 const WORKER_URL = 'https://silent-leaf-495dhobbyimprenditore.hobbyimprenditore.workers.dev/'; // ← Sostituisci con l'URL del tuo Cloudflare Worker
 const S={files:[],results:[],unified:null};
 const $=id=>document.getElementById(id);
