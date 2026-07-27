@@ -1143,6 +1143,23 @@ function updateBtn(){$('analyzeBtn').disabled=!S.files.length;}
 async function startAnalysis(){
   if(!currentUser){openAuthModal('login');return;}
   if(!S.files.length){alert('Carica almeno un documento.');return;}
+  async function startAnalysis(){
+  if(!currentUser){openAuthModal('login');return;}
+  if(!S.files.length){alert('Carica almeno un documento.');return;}
+
+  // ── CONTROLLO CREDITI (INSERIRE QUI) ──
+  if(creditiDisponibili < COSTO_ANALISI){
+    if(!confirm('Hai esaurito i crediti gratuiti! 💰\n\nVuoi contattare il proprietario per richiedere una ricarica?\n\n(WhatsApp / Instagram / Email)')) return;
+    window.open('https://wa.me/393204877661?text=Ciao!%20Vorrei%20richiedere%20crediti%20per%20la%20piattaforma%20REPORT', '_blank');
+    return;
+  }
+  const ok = await consumaCredito();
+  if(!ok){ alert('Errore nel consumo del credito. Riprova.'); return; }
+  // ── FINE CONTROLLO CREDITI ──
+
+  $('block-progress').classList.remove('hidden');
+  $('block-results').classList.add('hidden');
+  $('analyzeBtn').disabled=true;
   $('block-progress').classList.remove('hidden');
   $('block-results').classList.add('hidden');
   $('analyzeBtn').disabled=true;
