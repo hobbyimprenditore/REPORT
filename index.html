@@ -1,133 +1,826 @@
-// Cloudflare Worker - REPORT
-// Gestisce sia le richieste Claude API che le notifiche IPN PayPal
-
-const SUPABASE_URL = 'https://hvmnernovucnsksszsbe.supabase.co';
-const SUPABASE_SERVICE_KEY = 'LA_TUA_SERVICE_ROLE_KEY'; // ⚠️ Sostituisci con la Service Role Key di Supabase
-
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    
-    // ── ENDPOINT IPN PAYPAL ──
-    if (request.method === 'POST' && url.pathname === '/ipn') {
-      return handleIPN(request);
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>REPORT — Analisi Avvisi di Vendita Immobiliare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#f8f9fc; --white:#ffffff; --ink:#0f1117; --ink-mid:#374151;
+      --ink-soft:#6b7280; --ink-xs:#9ca3af;
+      --blue:#2563eb; --blue-dark:#1d4ed8; --blue-pale:#eff6ff; --blue-mid:#dbeafe;
+      --green:#16a34a; --green-pale:#f0fdf4; --green-mid:#dcfce7;
+      --red:#dc2626; --red-pale:#fef2f2; --red-mid:#fee2e2;
+      --yellow:#d97706; --yellow-pale:#fffbeb; --yellow-mid:#fef3c7;
+      --border:#e5e7eb; --border-mid:#d1d5db;
+      --r:12px; --r-sm:8px;
+      --sh:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.04);
+      --sh-sm:0 1px 3px rgba(0,0,0,.08);
+      --sh-lg:0 16px 48px rgba(0,0,0,.12);
+      --font:'Plus Jakarta Sans',system-ui,sans-serif;
     }
-    
-    // ── API CLAUDE (esistente) ──
-    if (request.method === 'POST' && url.pathname === '/') {
-      return handleClaude(request, env);
-    }
-    
-    return new Response('Not Found', { status: 404 });
-  }
-};
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+    a{color:var(--blue);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:960px;margin:0 auto;padding:0 24px}
+    .hidden{display:none!important}
 
-async function handleIPN(request) {
-  const body = await request.text();
-  
-  // 1. Verifica la notifica con PayPal
-  const verifyResponse = await fetch('https://ipnpb.paypal.com/cgi-bin/webscr', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'cmd=_notify-validate&' + body
+    /* TOPBAR */
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topbar-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-icon{font-size:28px}
+    .brand-name{font-size:20px;font-weight:800;letter-spacing:-.02em}
+    .brand-tag{font-size:11px;color:var(--ink-soft);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+    .topbar-links{display:flex;align-items:center;gap:20px}
+    .topbar-links a{color:var(--ink-mid);font-size:14px;font-weight:500;transition:color .15s}
+    .topbar-links a:hover{color:var(--blue);text-decoration:none}
+    .topbar-cta{background:var(--blue)!important;color:white!important;padding:8px 18px;border-radius:8px;font-weight:700!important}
+    .topbar-cta:hover{background:var(--blue-dark)!important}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#0f1117 0%,#1e2433 100%);color:white;padding:72px 24px 88px;display:flex;align-items:center;justify-content:center;gap:56px;flex-wrap:wrap}
+    .hero-content{max-width:500px}
+    .hero-pill{display:inline-block;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:100px;padding:6px 16px;font-size:13px;font-weight:600;margin-bottom:22px;color:rgba(255,255,255,.85)}
+    .hero h1{font-size:clamp(30px,5vw,50px);font-weight:800;line-height:1.1;margin-bottom:18px;letter-spacing:-.03em}
+    .hero-accent{background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-desc{font-size:16px;line-height:1.75;color:rgba(255,255,255,.72);margin-bottom:26px}
+    .hero-feats{display:flex;flex-direction:column;gap:8px;margin-bottom:32px}
+    .hero-feat{font-size:15px;font-weight:500;color:rgba(255,255,255,.85)}
+    .hero-btn{display:inline-flex;align-items:center;background:var(--blue);color:white;font-size:16px;font-weight:700;padding:14px 28px;border-radius:var(--r);transition:all .2s;box-shadow:0 4px 20px rgba(37,99,235,.4)}
+    .hero-btn:hover{background:var(--blue-dark);transform:translateY(-1px);text-decoration:none}
+
+    /* Hero card */
+    .hero-card{background:var(--white);border-radius:20px;padding:22px;width:290px;box-shadow:var(--sh-lg);animation:floatCard 4s ease-in-out infinite;flex-shrink:0}
+    @keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .hc-head{display:flex;align-items:center;gap:5px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .hc-dot{width:10px;height:10px;border-radius:50%}
+    .hc-dot.r{background:#ef4444}.hc-dot.y{background:#f59e0b}.hc-dot.g{background:#22c55e}
+    .hc-title{font-size:12px;font-weight:800;color:var(--ink);margin-left:auto}
+    .hc-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+    .hc-row:last-of-type{border:none}
+    .hc-lbl{color:var(--ink-soft);font-weight:500}.hc-val{font-weight:700}
+    .hc-val.hi{color:var(--blue);font-size:15px}.hc-val.gn{color:var(--green)}
+    .hc-verdict{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;border-radius:8px;font-size:12px;font-weight:700;background:var(--green-pale);color:var(--green);border:1px solid var(--green-mid)}
+
+    /* STEPS */
+    .steps{padding:72px 0;background:var(--white);border-bottom:1px solid var(--border)}
+    .eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-bottom:8px}
+    .sec-title{font-size:clamp(24px,4vw,36px);font-weight:800;letter-spacing:-.02em;margin-bottom:44px}
+    .steps-grid{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+    .step{flex:1;min-width:180px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:28px 24px;position:relative;transition:box-shadow .2s,transform .2s}
+    .step:hover{box-shadow:var(--sh);transform:translateY(-2px)}
+    .step-num{position:absolute;top:-13px;left:20px;background:var(--blue);color:white;font-size:11px;font-weight:800;padding:3px 11px;border-radius:100px;text-transform:uppercase;letter-spacing:.06em}
+    .step-ico{font-size:34px;margin-bottom:12px}
+    .step h3{font-size:16px;font-weight:700;margin-bottom:8px}
+    .step p{font-size:14px;color:var(--ink-mid);line-height:1.65}
+    .step-arr{font-size:26px;color:var(--border-mid);padding:0 6px;flex-shrink:0}
+
+    /* APP */
+    .app-sec{padding:56px 0}
+    .block{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:36px;margin-bottom:20px;box-shadow:var(--sh-sm)}
+    .block-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--blue);margin-bottom:6px}
+    .block h2{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+    .block-desc{font-size:15px;color:var(--ink-mid);margin-bottom:28px}
+
+    /* API */
+    .api-box{display:flex;gap:20px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:14px}
+    .api-ico{font-size:38px;flex-shrink:0}
+    .api-form{flex:1}
+    .field-lbl{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+    .api-row{display:flex;gap:10px}
+    .txt-input{flex:1;height:46px;border:2px solid var(--border);border-radius:var(--r-sm);padding:0 14px;font-family:var(--font);font-size:14px;color:var(--ink);background:white;outline:none;transition:border-color .15s}
+    .txt-input:focus{border-color:var(--blue)}
+    .txt-input::placeholder{color:var(--ink-xs)}
+    .btn-ok{height:46px;background:var(--blue);color:white;border:none;border-radius:var(--r-sm);padding:0 22px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;white-space:nowrap}
+    .btn-ok:hover{background:var(--blue-dark)}
+    .f-hint{margin-top:8px;font-size:13px;font-weight:600}
+    .f-hint.ok{color:var(--green)}.f-hint.err{color:var(--red)}
+    .tip{display:flex;gap:10px;background:var(--blue-pale);border:1px solid var(--blue-mid);border-radius:var(--r-sm);padding:12px 16px;font-size:13px;color:var(--ink-mid)}
+    .tip-ico{font-size:18px;flex-shrink:0}
+    .tip code{background:rgba(37,99,235,.1);padding:1px 5px;border-radius:4px;font-size:12px;color:var(--blue-dark)}
+
+    /* UPLOAD */
+    .upload-zone{border:3px dashed var(--border-mid);border-radius:20px;padding:52px 28px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);position:relative;margin-bottom:18px}
+    .upload-zone:hover,.upload-zone.drag-over{border-color:var(--blue);background:var(--blue-pale)}
+    .file-input-h{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+    .up-cloud{font-size:50px;line-height:1}
+    .up-arr{font-size:22px;color:var(--ink-xs);animation:bounce 1.5s ease-in-out infinite;display:block;margin-top:4px}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .up-main{font-size:19px;font-weight:700;margin:14px 0 4px}
+    .up-or{font-size:13px;color:var(--ink-soft);margin-bottom:14px}
+    .btn-pick{display:inline-flex;align-items:center;gap:7px;background:white;border:2px solid var(--border-mid);border-radius:var(--r-sm);padding:11px 22px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;color:var(--ink);transition:all .15s;margin-bottom:14px;position:relative;z-index:1}
+    .btn-pick:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+    .up-hint{font-size:12px;color:var(--ink-xs);font-weight:500}
+
+    /* File list */
+    .file-list{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+    .file-item{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px 16px}
+    .f-ico{font-size:26px;flex-shrink:0}
+    .f-meta{flex:1;min-width:0}
+    .f-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .f-size{font-size:12px;color:var(--ink-soft)}
+    .f-badge{flex-shrink:0;font-size:11px;font-weight:700;padding:3px 11px;border-radius:100px;background:var(--border);color:var(--ink-soft)}
+    .f-badge.done{background:var(--green-mid);color:var(--green)}
+    .f-badge.processing{background:var(--blue-mid);color:var(--blue-dark)}
+    .f-badge.error{background:var(--red-mid);color:var(--red)}
+    .f-del{background:none;border:none;cursor:pointer;font-size:17px;color:var(--ink-xs);padding:4px 7px;border-radius:6px;transition:all .15s;flex-shrink:0}
+    .f-del:hover{background:var(--red-pale);color:var(--red)}
+
+    /* Analyze btn */
+    .analyze-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    .btn-analyze{flex:1;min-width:240px;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:white;border:none;border-radius:var(--r);padding:18px 24px;font-family:var(--font);cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(37,99,235,.35)}
+    .btn-analyze:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,99,235,.45)}
+    .btn-analyze:disabled{opacity:.4;cursor:not-allowed}
+    .ba-ico{font-size:30px;flex-shrink:0}
+    .ba-main{font-size:17px;font-weight:800;text-align:left}
+    .ba-sub{font-size:12px;opacity:.8;margin-top:2px;text-align:left}
+    .ba-arr{font-size:20px;margin-left:auto;flex-shrink:0}
+    .btn-reset{background:none;border:1px solid var(--border-mid);border-radius:var(--r-sm);padding:10px 18px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap}
+    .btn-reset:hover{border-color:var(--red);color:var(--red)}
+
+    /* Progress */
+    .prog-vis{display:flex;align-items:center;gap:22px;margin-bottom:22px}
+    .prog-spin{width:52px;height:52px;border:5px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .9s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .prog-main{font-size:19px;font-weight:800}
+    .prog-sub{font-size:13px;color:var(--ink-soft);margin-top:3px}
+    .prog-track{background:var(--border);border-radius:100px;height:8px;overflow:hidden;margin-bottom:18px}
+    .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);border-radius:100px;width:0%;transition:width .4s ease}
+    .prog-log{display:flex;flex-direction:column;gap:5px;max-height:130px;overflow-y:auto}
+    .plog{font-size:13px;color:var(--ink-soft)}
+    .plog.ok{color:var(--green)}.plog.warn{color:var(--yellow)}
+
+    /* Verdict */
+    .verdict{border-radius:var(--r);padding:22px 26px;margin-bottom:26px;display:flex;align-items:center;gap:18px}
+    .verdict.low{background:var(--green-pale);border:2px solid var(--green)}
+    .verdict.mid{background:var(--yellow-pale);border:2px solid var(--yellow)}
+    .verdict.high{background:var(--red-pale);border:2px solid var(--red)}
+    .v-ico{font-size:44px;flex-shrink:0}
+    .v-ey{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;opacity:.6;margin-bottom:3px}
+    .v-title{font-size:22px;font-weight:800}
+    .v-desc{font-size:14px;margin-top:5px;opacity:.85}
+
+    /* Results top */
+    .res-top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+    .exp-btns{display:flex;gap:7px;flex-wrap:wrap}
+    .btn-exp{background:white;border:1px solid var(--border-mid);border-radius:var(--r-sm);padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;color:var(--ink-mid);transition:all .15s}
+    .btn-exp:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+
+    /* Tabs */
+    .tabs{display:flex;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:3px;margin-bottom:26px;overflow-x:auto}
+    .tab{flex:1;min-width:fit-content;background:none;border:none;border-radius:6px;padding:10px 14px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s;white-space:nowrap}
+    .tab:hover{color:var(--ink);background:white}
+    .tab.active{background:white;color:var(--blue);box-shadow:var(--sh-sm)}
+    .tab-pane{display:none}
+    .tab-pane.active{display:block;animation:fadeIn .25s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Prose */
+    .prose{font-size:15px;line-height:1.75;color:var(--ink-mid)}
+    .prose h3{font-size:19px;font-weight:800;color:var(--ink);margin:26px 0 12px}
+    .prose p{margin-bottom:12px}
+    .prose strong{color:var(--ink);font-weight:700}
+
+    /* Info card */
+    .icard{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:18px 22px;margin-bottom:14px}
+    .icard-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .if-lbl{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+    .if-val{font-size:15px;font-weight:600;color:var(--ink)}
+    .if-val.big{font-size:20px;font-weight:800;color:var(--blue)}
+    .if-val.gn{color:var(--green);font-weight:700}
+    .if-val.nd{color:var(--ink-xs);font-style:italic;font-weight:400;font-size:13px}
+    .if-full{grid-column:1/-1}
+
+    /* Alert */
+    .alert{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;border-radius:var(--r-sm);margin-bottom:10px;font-size:14px}
+    .alert.risk{background:var(--red-pale);border:1px solid var(--red-mid);color:#7f1d1d}
+    .alert.opp{background:var(--green-pale);border:1px solid var(--green-mid);color:#14532d}
+    .alert.info{background:var(--blue-pale);border:1px solid var(--blue-mid);color:#1e3a5f}
+    .alert.warn{background:var(--yellow-pale);border:1px solid var(--yellow-mid);color:#78350f}
+    .al-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+    .al-txt{flex:1;font-weight:500;line-height:1.55}
+
+    /* Table */
+    .tbl-wrap{overflow-x:auto;border-radius:var(--r-sm);border:1px solid var(--border)}
+    .dtbl{width:100%;border-collapse:collapse;font-size:13px}
+    .dtbl th{background:var(--ink);color:white;padding:11px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+    .dtbl td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+    .dtbl tr:last-child td{border-bottom:none}
+    .dtbl tr:hover td{background:var(--bg)}
+    .dt-cat{font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);white-space:nowrap;width:130px;border-right:2px solid var(--blue-mid);background:var(--blue-pale)}
+    .dt-key{font-weight:600;color:var(--ink-mid);width:190px}
+    .dt-val{color:var(--ink);font-weight:500}
+    .dt-nd{color:var(--ink-xs);font-style:italic;font-weight:400}
+    .dt-risk{color:var(--red);font-weight:700}
+    .dt-good{color:var(--green);font-weight:700}
+
+    /* Footer btns */
+    .res-foot{margin-top:28px;text-align:center}
+    .btn-new{display:inline-flex;align-items:center;gap:7px;background:var(--bg);border:2px solid var(--border-mid);border-radius:var(--r);padding:12px 24px;font-family:var(--font);font-size:15px;font-weight:700;color:var(--ink-mid);cursor:pointer;transition:all .15s}
+    .btn-new:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+
+    /* FAQ */
+    .faq-sec{background:white;border-top:1px solid var(--border);padding:72px 0}
+    .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .faq-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:22px}
+    .faq-q{font-size:15px;font-weight:800;margin-bottom:8px}
+    .faq-a{font-size:14px;color:var(--ink-mid);line-height:1.65}
+
+    /* Footer */
+    .site-footer{background:var(--ink);color:rgba(255,255,255,.5);padding:44px 24px;text-align:center}
+    .ft-brand{font-size:20px;font-weight:800;color:white;margin-bottom:9px}
+    .site-footer p{font-size:13px;margin-bottom:7px}
+    .ft-disc{font-size:11px;opacity:.55;line-height:1.6;margin-top:14px}
+
+    /* SOCIAL SECTION */
+    .social-sec{background:linear-gradient(135deg,#0f1117 0%,#1a1f2e 100%);padding:80px 0;border-top:3px solid #f97316}
+    .social-inner{max-width:760px;margin:0 auto}
+    .social-title{font-size:clamp(28px,4vw,42px);font-weight:800;color:white;line-height:1.15;margin-bottom:16px;letter-spacing:-.02em}
+    .social-desc{font-size:16px;color:rgba(255,255,255,.7);line-height:1.75;margin-bottom:36px;max-width:580px}
+    .social-desc strong{color:white}
+    .social-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:36px}
+    .social-card{display:flex;align-items:center;gap:18px;padding:18px 22px;border-radius:14px;text-decoration:none;transition:all .2s;border:1px solid rgba(255,255,255,.08)}
+    .social-card:hover{transform:translateX(6px);text-decoration:none;border-color:rgba(255,255,255,.2)}
+    .social-card.yt{background:linear-gradient(135deg,#ff0000 0%,#cc0000 100%)}
+    .social-card.yt:hover{box-shadow:0 8px 32px rgba(255,0,0,.35)}
+    .social-card.ig{background:linear-gradient(135deg,#833ab4 0%,#fd1d1d 50%,#fcb045 100%)}
+    .social-card.ig:hover{box-shadow:0 8px 32px rgba(253,29,29,.3)}
+    .social-card.em{background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%)}
+    .social-card.em:hover{box-shadow:0 8px 32px rgba(37,99,235,.4)}
+    .sc-icon{width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0}
+    .sc-info{flex:1}
+    .sc-name{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.7);margin-bottom:2px}
+    .sc-handle{font-size:17px;font-weight:800;color:white;margin-bottom:3px}
+    .sc-cta{font-size:13px;color:rgba(255,255,255,.8);font-weight:600}
+    .review-box{display:flex;gap:20px;align-items:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(249,115,22,.3);border-radius:16px;padding:28px}
+    .review-emoji{font-size:40px;flex-shrink:0;line-height:1}
+    .review-title{font-size:20px;font-weight:800;color:white;margin-bottom:10px}
+    .review-desc{font-size:15px;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:20px}
+    .review-btns{display:flex;gap:10px;flex-wrap:wrap}
+    .rbtn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;transition:all .15s}
+    .rbtn:hover{transform:translateY(-1px);text-decoration:none}
+    .rbtn-ig{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:white}
+    .rbtn-em{background:#2563eb;color:white}
+    .rbtn-ig:hover{box-shadow:0 4px 16px rgba(253,29,29,.4)}
+    .rbtn-em:hover{box-shadow:0 4px 16px rgba(37,99,235,.4)}
+    .ft-social-mini{display:flex;justify-content:center;gap:16px;margin:14px 0}
+    .ft-social-mini a{display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.6);transition:all .15s;text-decoration:none}
+    .ft-social-mini a:hover{background:rgba(255,255,255,.15);color:white;transform:translateY(-2px)}
+    @media(max-width:600px){.review-box{flex-direction:column;gap:12px}.social-card{padding:14px 16px}.sc-handle{font-size:15px}}
+
+    /* Crediti bassi */
+    #creditiDisplay.low { background: #fff3cd; border-color: #f59e0b; color: #92400e; }
+    #creditiDisplay.low span:first-child { animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* Print */
+    @media print{
+      .topbar,.hero,.steps,.faq-sec,.site-footer,.exp-btns,.tabs,.res-foot,.btn-reset,.analyze-wrap,.block:not(#block-results),.block-label{display:none!important}
+      .tab-pane{display:block!important}
+      .app-sec{padding:0}
+      body{background:white}
+      body.admin-printing #block-results,body.admin-printing .app-sec,body.admin-printing .modal-back{display:none!important}
+      body.admin-printing #adminPrintArea{display:block!important}
+    }
+    #adminTableWrap table{width:100%;border-collapse:collapse;font-size:14px}
+    #adminTableWrap th,#adminTableWrap td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:left}
+    #adminTableWrap th{color:var(--ink-soft);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+    #adminPrintArea table{width:100%;border-collapse:collapse;font-size:13px}
+    #adminPrintArea th,#adminPrintArea td{padding:8px;border:1px solid #ccc;text-align:left}
+
+    /* Mobile */
+    @media(max-width:680px){
+      .hero{padding:44px 18px 56px;flex-direction:column;gap:28px}
+      .hero-card{display:none}
+      .steps-grid{flex-direction:column}
+      .step-arr{display:none}
+      .block{padding:22px 18px}
+      .api-box{flex-direction:column}
+      .api-row{flex-direction:column}
+      .icard-grid{grid-template-columns:1fr}
+      .faq-grid{grid-template-columns:1fr}
+      .topbar-links a:not(.topbar-cta){display:none}
+      .res-top{flex-direction:column;align-items:flex-start}
+    }
+
+    /* AUTH */
+    .user-badge{display:flex;align-items:center;gap:10px;font-size:14px}
+    .user-badge .u-email{color:var(--ink-mid);font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .user-badge .u-logout{background:var(--bg);border:1px solid var(--border);color:var(--ink-mid);padding:7px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:13px}
+    .user-badge .u-logout:hover{background:var(--border)}
+    .user-badge .u-donate{background:#fdf2f2;color:#e0245e;padding:7px 14px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none;cursor:pointer;border:none;font-family:var(--font)}
+    .user-badge .u-donate:hover{background:#fbe2e6}
+    .auth-overlay{position:absolute;inset:0;background:rgba(255,255,255,.85);backdrop-filter:blur(3px);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:5}
+    .auth-overlay p{max-width:360px;color:var(--ink-mid);margin-bottom:16px}
+    .auth-overlay .lock{font-size:36px;margin-bottom:10px}
+    .auth-overlay button{background:var(--blue);color:#fff;border:none;padding:12px 26px;border-radius:var(--r-sm);font-weight:700;cursor:pointer;font-family:var(--font);font-size:15px}
+    .auth-overlay button:hover{background:var(--blue-dark)}
+    #block-upload{position:relative}
+    .modal-back{position:fixed;inset:0;background:rgba(15,17,23,.55);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
+    .modal-box{background:#fff;border-radius:20px;padding:32px;max-width:400px;width:100%;box-shadow:var(--sh-lg);position:relative;max-height:92vh;overflow-y:auto}
+    .modal-box .m-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink-soft)}
+    .modal-box h3{font-size:20px;font-weight:800;margin-bottom:6px}
+    .modal-box .m-sub{color:var(--ink-soft);font-size:14px;margin-bottom:20px}
+    .m-tabs{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:20px}
+    .m-tab{flex:1;text-align:center;padding:9px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;color:var(--ink-soft)}
+    .m-tab.active{background:#fff;color:var(--ink);box-shadow:var(--sh-sm)}
+    .m-field{margin-bottom:14px}
+    .m-field label{display:block;font-size:13px;font-weight:700;color:var(--ink-mid);margin-bottom:6px}
+    .m-field input,.m-field select{width:100%;padding:11px 14px;border:1px solid var(--border-mid);border-radius:var(--r-sm);font-family:var(--font);font-size:15px;background:#fff}
+    .m-field input:focus,.m-field select:focus{outline:2px solid var(--blue);outline-offset:1px}
+    .m-submit{width:100%;background:var(--blue);color:#fff;border:none;padding:13px;border-radius:var(--r-sm);font-weight:700;font-size:15px;cursor:pointer;font-family:var(--font);margin-top:4px}
+    .m-submit:hover{background:var(--blue-dark)}
+    .m-submit:disabled{opacity:.6;cursor:not-allowed}
+    .m-link{background:none;border:none;color:var(--blue);font-size:13px;cursor:pointer;font-family:var(--font);text-decoration:underline;padding:0}
+    .m-msg{font-size:13px;padding:10px 12px;border-radius:8px;margin-bottom:14px}
+    .m-msg.err{background:var(--red-pale);color:var(--red)}
+    .m-msg.ok{background:var(--green-pale);color:var(--green)}
+    .m-foot{text-align:center;margin-top:16px;font-size:13px;color:var(--ink-soft)}
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-icon">⚖️</div>
+      <div>
+        <div class="brand-name">REPORT</div>
+        <div class="brand-tag">Analisi Aste Immobiliari</div>
+      </div>
+    </div>
+    <div class="topbar-links">
+      <a href="#come-funziona">Come funziona</a>
+      <a href="#inizia" class="topbar-cta" id="ctaInizia" onclick="return topCtaClick(event)">Inizia →</a>
+      <div id="creditPanel" class="hidden" style="display:flex;align-items:center;gap:8px;margin-right:8px">
+        <div id="creditiDisplay" style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--ink-mid);display:flex;align-items:center;gap:6px">
+          <span>🪙</span>
+          <span id="creditiCount">0</span>
+          <span style="font-weight:400;color:var(--ink-soft)">crediti</span>
+        </div>
+        <button onclick="apriStorico()" title="Storico analisi" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-mid);cursor:pointer;white-space:nowrap">📊 Storico</button>
+        <button onclick="apriPannelloAdminCrediti()" id="btnAdminCrediti" title="Ricarica crediti (Admin)" style="display:none;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:8px;padding:6px 12px;font-family:var(--font);font-size:13px;font-weight:700;color:white;cursor:pointer;white-space:nowrap">👑 Ricarica</button>
+      </div>
+      <div class="user-badge hidden" id="userBadge">
+        <span class="u-email" id="userEmail"></span>
+        <button onclick="apriModaleDonazione()" class="u-donate" title="Dona e ricevi crediti">❤️ Dona</button>
+        <button class="u-logout" onclick="requestAccountDeletion()">Elimina account</button>
+        <button class="u-logout" onclick="authLogout()">Esci</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- AUTH MODAL -->
+<div class="modal-back hidden" id="authModalBack" onclick="if(event.target===this)closeAuthModal()">
+  <div class="modal-box">
+    <button class="m-close" onclick="closeAuthModal()">✕</button>
+    <div id="authMsg"></div>
+    <div id="viewAuth">
+      <div class="m-tabs">
+        <div class="m-tab active" id="tabLogin" onclick="switchAuthTab('login')">Accedi</div>
+        <div class="m-tab" id="tabRegister" onclick="switchAuthTab('register')">Registrati</div>
+      </div>
+      <form id="formLogin" onsubmit="return handleLogin(event)">
+        <h3>Bentornato</h3>
+        <p class="m-sub">Accedi per usare lo strumento di analisi.</p>
+        <div class="m-field"><label>Email</label><input type="email" id="loginEmail" required></div>
+        <div class="m-field"><label>Password</label><input type="password" id="loginPassword" required></div>
+        <button class="m-submit" type="submit" id="loginBtn">Accedi</button>
+        <div class="m-foot"><button type="button" class="m-link" onclick="switchAuthTab('forgot')">Password dimenticata?</button></div>
+      </form>
+      <form id="formRegister" class="hidden" onsubmit="return handleRegister(event)">
+        <h3>Crea il tuo account</h3>
+        <p class="m-sub">Necessario per analizzare gli avvisi.</p>
+        <div class="m-field"><label>Email</label><input type="email" id="regEmail" required></div>
+        <div class="m-field"><label>Numero di cellulare</label><input type="tel" id="regPhone" required placeholder="+39 333 1234567"></div>
+        <div class="m-field"><label>Città di residenza</label><input type="text" id="regCity" required placeholder="es. Milano"></div>
+        <div class="m-field"><label>Password</label><input type="password" id="regPassword" required minlength="6"></div>
+        <button class="m-submit" type="submit" id="regBtn">Crea account</button>
+      </form>
+    </div>
+    <div id="viewVerifySignup" class="hidden">
+      <h3>Controlla la tua email</h3>
+      <p class="m-sub">Abbiamo inviato un link di conferma a <strong id="verifySignupEmail"></strong>.</p>
+      <button class="m-submit" type="button" onclick="switchAuthTab('login')">Ho confermato, vai al login</button>
+      <div class="m-foot"><button type="button" class="m-link" onclick="resendSignupCode()">Non hai ricevuto l'email? Invia di nuovo</button></div>
+    </div>
+    <div id="viewForgot" class="hidden">
+      <h3>Recupera password</h3>
+      <p class="m-sub">Ti invieremo un link via email per reimpostare la password.</p>
+      <form onsubmit="return handleForgot(event)">
+        <div class="m-field"><label>Email</label><input type="email" id="forgotEmail" required></div>
+        <button class="m-submit" type="submit" id="forgotBtn">Invia link</button>
+      </form>
+      <div class="m-foot"><button type="button" class="m-link" onclick="switchAuthTab('login')">Torna al login</button></div>
+    </div>
+    <div id="viewForgotSent" class="hidden">
+      <h3>Controlla la tua email</h3>
+      <p class="m-sub">Ti abbiamo inviato un link per reimpostare la password.</p>
+      <button class="m-submit" type="button" onclick="switchAuthTab('login')">Torna al login</button>
+    </div>
+    <div id="viewReset" class="hidden">
+      <h3>Imposta nuova password</h3>
+      <p class="m-sub">Scegli la tua nuova password.</p>
+      <form onsubmit="return handleReset(event)">
+        <div class="m-field"><label>Nuova password</label><input type="password" id="resetPassword" required minlength="6"></div>
+        <button class="m-submit" type="submit" id="resetBtn">Reimposta password</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- HERO + STEPS + APP (identici alla versione precedente) -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-pill">🏠 Strumento professionale gratuito</div>
+    <h1>Analizza un'asta<br/><span class="hero-accent">in pochi minuti</span></h1>
+    <p class="hero-desc">Carica l'avviso di vendita. Il sistema lo legge, lo analizza come un avvocato esperto e ti dice chiaramente se è un buon affare o no.</p>
+    <div class="hero-feats">
+      <div class="hero-feat">✅ Nessuna competenza tecnica richiesta</div>
+      <div class="hero-feat">✅ Risultato in meno di 2 minuti</div>
+      <div class="hero-feat">✅ Report scaricabile e stampabile</div>
+    </div>
+    <a href="#inizia" class="hero-btn" onclick="return topCtaClick(event)">Analizza il tuo avviso →</a>
+  </div>
+  <div class="hero-card">
+    <div class="hc-head"><span class="hc-dot r"></span><span class="hc-dot y"></span><span class="hc-dot g"></span><span class="hc-title">Report Analisi</span></div>
+    <div class="hc-row"><span class="hc-lbl">Tribunale</span><span class="hc-val">Milano</span></div>
+    <div class="hc-row"><span class="hc-lbl">Valore stima</span><span class="hc-val">€ 280.000</span></div>
+    <div class="hc-row"><span class="hc-lbl">Prezzo base</span><span class="hc-val hi">€ 168.000</span></div>
+    <div class="hc-row"><span class="hc-lbl">Sconto</span><span class="hc-val gn">-40%</span></div>
+    <div class="hc-verdict">✅ Rischio BASSO — Alta convenienza</div>
+  </div>
+</section>
+
+<section class="steps" id="come-funziona">
+  <div class="container">
+    <div class="eyebrow">È semplicissimo</div>
+    <h2 class="sec-title">Come funziona in 2 passi</h2>
+    <div class="steps-grid">
+      <div class="step"><div class="step-num">Passo 1</div><div class="step-ico">📂</div><h3>Carica i documenti</h3><p>Trascina il PDF dell'avviso di vendita, oppure clicca il pulsante. Puoi caricare più file insieme.</p></div>
+      <div class="step-arr">→</div>
+      <div class="step"><div class="step-num">Passo 2</div><div class="step-ico">📊</div><h3>Leggi il report</h3><p>In circa 60 secondi ricevi l'analisi completa: rischi, opportunità e un giudizio finale chiaro.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="app-sec" id="inizia">
+  <div class="container">
+    <div class="block" id="block-upload">
+      <div class="auth-overlay hidden" id="authGate">
+        <div class="lock">🔒</div>
+        <h3>Accedi per continuare</h3>
+        <p>Per analizzare un avviso di vendita devi prima registrarti o accedere al tuo account. È gratuito e richiede un minuto.</p>
+        <button onclick="openAuthModal('register')">Registrati o accedi →</button>
+      </div>
+      <div class="block-label">Passo 1</div>
+      <h2>Carica i tuoi documenti</h2>
+      <p class="block-desc">Puoi caricare uno o più file contemporaneamente. Formati accettati: <strong>PDF, TXT, Word, immagini JPG/PNG</strong></p>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" multiple accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg" class="file-input-h" />
+        <div class="up-cloud">☁️</div><span class="up-arr">⬆</span>
+        <p class="up-main">Trascina qui i file</p><p class="up-or">oppure</p>
+        <button class="btn-pick" onclick="event.stopPropagation();document.getElementById('fileInput').click()">📂 Scegli file dal computer</button>
+        <p class="up-hint">PDF · TXT · DOC · DOCX · PNG · JPG &nbsp;|&nbsp; Più file contemporaneamente ✓</p>
+      </div>
+      <div id="fileList" class="file-list hidden"></div>
+      <div id="analyzeWrap" class="analyze-wrap hidden">
+        <button class="btn-analyze" id="analyzeBtn" onclick="startAnalysis()" disabled>
+          <span class="ba-ico">⚖️</span><div><div class="ba-main">Avvia l'analisi</div><div class="ba-sub">Risultato in circa 60 secondi</div></div><span class="ba-arr">→</span>
+        </button>
+        <button class="btn-reset" onclick="clearAll()">✕ Ricomincia</button>
+      </div>
+    </div>
+    <div class="block hidden" id="block-progress">
+      <div class="block-label">In corso…</div><h2>Analisi in corso, attendi</h2><p class="block-desc">L'intelligenza artificiale sta leggendo i tuoi documenti.</p>
+      <div class="prog-vis"><div class="prog-spin"></div><div><div class="prog-main" id="progTitle">Avvio analisi…</div><div class="prog-sub" id="progDesc">Elaborazione in corso</div></div></div>
+      <div class="prog-track"><div class="prog-fill" id="progBar"></div></div>
+      <div class="prog-log" id="progLog"></div>
+    </div>
+    <div class="block hidden" id="block-results">
+      <div id="verdictEl" class="hidden"></div>
+      <div class="res-top"><div><div class="block-label">Il tuo Report</div><h2>Analisi completata ✓</h2></div><div class="exp-btns"><button class="btn-exp" onclick="exportHTML()">⬇ Salva HTML</button><button class="btn-exp" onclick="exportTxt()">⬇ Salva TXT</button><button class="btn-exp" onclick="window.print()">🖨 Stampa</button></div></div>
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('panoramica',this)">🏠 Panoramica</button>
+        <button class="tab" onclick="switchTab('legale',this)">⚖️ Legale</button>
+        <button class="tab" onclick="switchTab('economica',this)">💰 Economia</button>
+        <button class="tab" onclick="switchTab('rischi',this)">🔍 Rischi</button>
+        <button class="tab" onclick="switchTab('tabella',this)">📋 Tutti i dati</button>
+      </div>
+      <div class="tab-pane active" id="tp-panoramica"></div>
+      <div class="tab-pane" id="tp-legale"></div>
+      <div class="tab-pane" id="tp-economica"></div>
+      <div class="tab-pane" id="tp-rischi"></div>
+      <div class="tab-pane" id="tp-tabella"></div>
+      <div class="res-foot"><button class="btn-new" onclick="clearAll()">+ Analizza un altro documento</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ + SOCIAL + FOOTER (identici) -->
+<section class="faq-sec"><div class="container"><div class="eyebrow">Domande frequenti</div><h2 class="sec-title">Hai dei dubbi?</h2><div class="faq-grid"><div class="faq-item"><div class="faq-q">È sicuro usare questo strumento?</div><div class="faq-a">Sì. I tuoi documenti vengono elaborati tramite un server proxy sicuro e non vengono mai salvati.</div></div><div class="faq-item"><div class="faq-q">Che formati di file posso caricare?</div><div class="faq-a">PDF, Word, testo e immagini. Puoi caricare più file insieme.</div></div><div class="faq-item"><div class="faq-q">L'analisi sostituisce un avvocato?</div><div class="faq-a">No. È uno strumento di supporto. Per decisioni importanti, consulta un avvocato.</div></div><div class="faq-item"><div class="faq-q">Se carico più file cosa succede?</div><div class="faq-a">Il sistema li analizza tutti e li unisce in un unico report.</div></div></div></div></section>
+
+<section class="social-sec"><div class="container"><div class="social-inner"><div class="social-text"><div class="eyebrow" style="color:#f97316">Seguimi sui social</div><h2 class="social-title">Ti è stato utile?<br/>Resta in contatto! 🙌</h2><p class="social-desc">Realizzato con passione da <strong>Hobby Imprenditore</strong>. Iscriviti al canale YouTube per altri contenuti su investimenti e aste.</p><div class="social-cards">
+  <a href="https://www.youtube.com/@HobbyImprenditore?sub_confirmation=1" target="_blank" class="social-card yt"><div class="sc-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div><div class="sc-info"><div class="sc-name">YouTube</div><div class="sc-handle">@HobbyImprenditore</div><div class="sc-cta">🔔 Iscriviti →</div></div></a>
+  <a href="https://www.instagram.com/hobby_imprenditore/" target="_blank" class="social-card ig"><div class="sc-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div><div class="sc-info"><div class="sc-name">Instagram</div><div class="sc-handle">@hobby_imprenditore</div><div class="sc-cta">❤️ Seguimi →</div></div></a>
+  <a href="mailto:hobbyimprenditore@gmail.it" class="social-card em"><div class="sc-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div><div class="sc-info"><div class="sc-name">Email</div><div class="sc-handle">hobbyimprenditore@gmail.com</div><div class="sc-cta">✉️ Scrivimi →</div></div></a>
+</div></div></div></div></section>
+
+<footer class="site-footer">
+  <div class="ft-brand">⚖️ REPORT</div><p>Analisi Aste Immobiliari — by <strong style="color:#f97316">Hobby Imprenditore</strong> — Powered by Claude AI</p>
+  <div class="ft-social-mini">
+    <a href="https://www.youtube.com/@HobbyImprenditore?sub_confirmation=1" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+    <a href="https://www.instagram.com/hobby_imprenditore/" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+    <a href="mailto:hobbyimprenditore@gmail.it"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>
+  </div>
+  <p class="ft-disc">⚠️ Strumento di supporto informativo. Non costituisce consulenza legale professionale ai sensi della L. 247/2012.</p>
+  <span id="adminGear" class="hidden" onclick="openAdminPanel()" style="display:inline-block;margin-top:14px;font-size:13px;color:rgba(255,255,255,.25);cursor:pointer;">⚙</span>
+</footer>
+
+<!-- MODALI -->
+<div class="modal-back hidden" id="adminModalBack" onclick="if(event.target===this)closeAdminPanel()">
+  <div class="modal-box" style="max-width:820px"><button class="m-close" onclick="closeAdminPanel()">✕</button><h3>Utenti registrati</h3><p class="m-sub" id="adminCount">Caricamento…</p><div style="max-height:55vh;overflow:auto;margin-bottom:16px" id="adminTableWrap"></div><button class="m-submit" onclick="printAdminReport()">🖨 Stampa / Esporta PDF</button></div>
+</div>
+<div id="adminPrintArea" class="hidden"></div>
+
+<div class="modal-back hidden" id="modalStoricoBack" onclick="if(event.target===this)chiudiStorico()">
+  <div class="modal-box" style="max-width:700px"><button class="m-close" onclick="chiudiStorico()">✕</button><h3>📊 Storico delle tue analisi</h3><p class="m-sub">Tutte le analisi che hai generato. Clicca su "Carica" per rivederle, o su 🗑️ per eliminarle.</p><div id="storicoLista" style="max-height:55vh;overflow-y:auto"></div></div>
+</div>
+
+<div class="modal-back hidden" id="modalAdminCreditiBack" onclick="if(event.target===this)chiudiPannelloAdminCrediti()">
+  <div class="modal-box" style="max-width:500px"><button class="m-close" onclick="chiudiPannelloAdminCrediti()">✕</button><h3>👑 Ricarica Crediti Utente</h3><p class="m-sub">Inserisci l'ID dell'utente e la quantità di crediti da aggiungere.</p><div id="adminMsgCrediti"></div><div class="m-field"><label>ID Utente (UUID)</label><input type="text" id="adminUserId" placeholder="es. a1b2c3d4-..."></div><div class="m-field"><label>Quantità crediti</label><input type="number" id="adminQta" min="1" value="10"></div><div class="m-field"><label>Note (opzionale)</label><input type="text" id="adminNote" placeholder="es. Ricarica WhatsApp"></div><button class="m-submit" onclick="eseguiRicaricaCrediti()">💰 Ricarica</button></div>
+</div>
+
+<!-- MODALE DONAZIONE CON FORM PAYPAL -->
+<div class="modal-back hidden" id="modalDonazioneBack" onclick="if(event.target===this)chiudiModaleDonazione()">
+  <div class="modal-box" style="max-width:520px">
+    <button class="m-close" onclick="chiudiModaleDonazione()">✕</button>
+    <h3>❤️ Dona e ricevi crediti</h3>
+    <p class="m-sub">1 euro donato = 1 credito per le tue analisi. <strong>La ricarica è automatica!</strong> Dopo il pagamento, i crediti vengono accreditati in pochi secondi.</p>
+    
+    <form action="https://www.paypal.com/donate" method="post" target="_blank" onsubmit="document.getElementById('paypalCustomId').value = currentUser ? currentUser.id : ''">
+      <input type="hidden" name="hosted_button_id" value="VT9GSFLFTN3V6">
+      <input type="hidden" name="custom" id="paypalCustomId" value="">
+      <input type="hidden" name="amount" id="paypalAmount" value="5">
+      
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px">
+        <label style="font-weight:700;font-size:14px;display:block;margin-bottom:8px">Importo (€):</label>
+        <input type="number" id="donationAmount" min="1" value="5" step="1" style="width:100%;padding:12px;border:1px solid var(--border-mid);border-radius:8px;font-size:16px;font-family:var(--font)" onchange="document.getElementById('paypalAmount').value = this.value">
+        <p style="font-size:12px;color:var(--ink-soft);margin-top:6px">Riceverai <strong id="creditiPrevisti">5</strong> crediti</p>
+      </div>
+      
+      <button type="submit" class="m-submit" style="background:#0070ba">💳 Paga con PayPal</button>
+      <p style="font-size:11px;color:var(--ink-soft);text-align:center;margin-top:8px">Si apre in una nuova finestra. Torna qui dopo il pagamento.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── VARIABILI GLOBALI ──
+let creditiDisponibili = 0;
+const COSTO_ANALISI = 1;
+const WORKER_URL = 'https://silent-leaf-495dhobbyimprenditore.hobbyimprenditore.workers.dev/';
+const S={files:[],results:[],unified:null};
+const $=id=>document.getElementById(id);
+if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}
+
+// ── SUPABASE ──
+const SUPABASE_URL='https://hvmnernovucnsksszsbe.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_5bBF51zEshWF3YtBh-YQoA_keV7WfCH';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+let currentUser=null;
+let pendingSignupEmail=null;
+let isAdmin=false;
+
+async function initAuth(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(session){await afterAuthCheck(session);}else{setAuthUI(null);}
+  sb.auth.onAuthStateChange((event,session)=>{
+    if(event==='PASSWORD_RECOVERY'){
+      openAuthModal('login');$('viewAuth').classList.add('hidden');$('viewForgot').classList.add('hidden');$('viewForgotSent').classList.add('hidden');$('viewVerifySignup').classList.add('hidden');$('viewReset').classList.remove('hidden');return;
+    }
+    if(event==='SIGNED_IN'&&session){afterAuthCheck(session);}
+    else if(event==='SIGNED_OUT'){isAdmin=false;$('adminGear').classList.add('hidden');setAuthUI(null);}
   });
-  
-  const verifyText = await verifyResponse.text();
-  
-  if (verifyText.trim() !== 'VERIFIED') {
-    return new Response('Invalid', { status: 400 });
-  }
-  
-  // 2. Parsa i dati
-  const params = new URLSearchParams(body);
-  const paymentStatus = params.get('payment_status');
-  const custom = params.get('custom');      // ID utente Supabase
-  const amount = parseFloat(params.get('mc_gross') || '0');
-  const receiverEmail = params.get('receiver_email');
-  const txnId = params.get('txn_id');
-  
-  console.log('IPN ricevuta:', { paymentStatus, custom, amount, receiverEmail, txnId });
-  
-  // 3. Controlli di sicurezza
-  if (paymentStatus !== 'Completed') {
-    return new Response('OK', { status: 200 }); // Non ancora completato, PayPal riproverà
-  }
-  
-  if (receiverEmail !== 'hobbyimprenditore@gmail.com') {
-    console.log('Destinatario errato:', receiverEmail);
-    return new Response('OK', { status: 200 });
-  }
-  
-  if (!custom || amount <= 0) {
-    console.log('Dati mancanti: custom o amount');
-    return new Response('OK', { status: 200 });
-  }
-  
-  // 4. Recupera crediti attuali
-  const { data: current, error: fetchError } = await fetch(
-    `${SUPABASE_URL}/rest/v1/crediti_utente?user_id=eq.${custom}&select=crediti`,
-    {
-      headers: {
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`
-      }
-    }
-  ).then(r => r.json());
-  
-  if (fetchError) {
-    console.error('Errore fetch crediti:', fetchError);
-    return new Response('OK', { status: 200 });
-  }
-  
-  const currentCredits = (current && current[0]?.crediti) || 0;
-  const creditsToAdd = Math.floor(amount); // 1 euro = 1 credito
-  
-  // 5. Aggiorna crediti
-  const { error: updateError } = await fetch(
-    `${SUPABASE_URL}/rest/v1/crediti_utente?user_id=eq.${custom}`,
-    {
-      method: 'PATCH',
-      headers: {
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        crediti: currentCredits + creditsToAdd,
-        ultima_ricarica: new Date().toISOString()
-      })
-    }
-  );
-  
-  if (updateError) {
-    console.error('Errore update crediti:', updateError);
-    return new Response('OK', { status: 200 });
-  }
-  
-  // 6. Registra nello storico
-  await fetch(`${SUPABASE_URL}/rest/v1/storico_ricariche`, {
-    method: 'POST',
-    headers: {
-      'apikey': SUPABASE_SERVICE_KEY,
-      'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal'
-    },
-    body: JSON.stringify({
-      admin_id: '00000000-0000-0000-0000-000000000000',
-      user_id: custom,
-      quantita: creditsToAdd,
-      note: `Donazione automatica €${amount} (txn: ${txnId})`
-    })
-  });
-  
-  console.log(`✅ Crediti aggiornati: utente ${custom}, +${creditsToAdd} crediti (saldo: ${currentCredits + creditsToAdd})`);
-  
-  return new Response('OK', { status: 200 });
 }
 
-async function handleClaude(request, env) {
-  // Il tuo codice esistente per Claude API
-  // ... (invariato)
+async function afterAuthCheck(session){
+  const {data:profile}=await sb.from('profiles').select('is_blocked,is_admin').eq('id',session.user.id).single();
+  if(profile && profile.is_blocked){
+    await sb.auth.signOut();setAuthUI(null);showAuthMsg('Il tuo account è stato sospeso.','err');openAuthModal('login');return;
+  }
+  isAdmin = !!(profile && profile.is_admin);
+  $('adminGear').classList.toggle('hidden', !isAdmin);
+  setAuthUI(session.user);
+  await caricaCrediti();
+  $('creditPanel').classList.remove('hidden');
 }
+
+function setAuthUI(user){
+  currentUser = user;
+  const badge = $('userBadge'), cta = $('ctaInizia'), gate = $('authGate'), cp = $('creditPanel');
+  const adminBtn = $('btnAdminCrediti');
+  if(user){
+    if(badge) badge.classList.remove('hidden');if(cta) cta.classList.add('hidden');if(gate) gate.classList.add('hidden');if(cp) cp.classList.remove('hidden');
+    if($('userEmail')) $('userEmail').textContent = user.email;
+    if(adminBtn) adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
+  } else {
+    if(badge) badge.classList.add('hidden');if(cta) cta.classList.remove('hidden');if(gate) gate.classList.remove('hidden');if(cp) cp.classList.add('hidden');
+    if(adminBtn) adminBtn.style.display = 'none';
+  }
+}
+
+// ── CREDITI ──
+async function caricaCrediti(){
+  if(!currentUser) return;
+  if (currentUser.email === 'hobbyimprenditore@gmail.com') { creditiDisponibili = Infinity; aggiornaDisplayCrediti(); return; }
+  const {data} = await sb.from('crediti_utente').select('crediti').eq('user_id', currentUser.id).single();
+  if(!data){ await sb.from('crediti_utente').insert({user_id: currentUser.id, crediti: 10, crediti_totali_acquistati: 10}); creditiDisponibili = 10; }
+  else { creditiDisponibili = data.crediti; }
+  aggiornaDisplayCrediti();
+}
+async function consumaCredito(){
+  if(creditiDisponibili === Infinity) return true;
+  if(creditiDisponibili < COSTO_ANALISI) return false;
+  const nuovi = creditiDisponibili - COSTO_ANALISI;
+  const {error} = await sb.from('crediti_utente').update({crediti: nuovi}).eq('user_id', currentUser.id);
+  if(error){ console.error('Errore consumo credito:', error); return false; }
+  creditiDisponibili = nuovi; aggiornaDisplayCrediti(); return true;
+}
+function aggiornaDisplayCrediti(){
+  const countEl = $('creditiCount'), displayEl = $('creditiDisplay');
+  if (creditiDisponibili === Infinity) { countEl.textContent = '∞'; displayEl.classList.remove('low'); }
+  else { countEl.textContent = creditiDisponibili; displayEl.classList.toggle('low', creditiDisponibili < 2); }
+}
+
+// ── STORICO ──
+async function apriStorico(){
+  if(!currentUser) return;
+  $('modalStoricoBack').classList.remove('hidden');$('storicoLista').innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-soft)">Caricamento…</div>';
+  const {data, error} = await sb.from('reports').select('id, file_names, created_at, report_data').eq('user_id', currentUser.id).order('created_at', {ascending: false}).limit(50);
+  if(error){ $('storicoLista').innerHTML = '<p style="color:var(--red)">Errore.</p>'; return; }
+  if(!data || data.length === 0){ $('storicoLista').innerHTML = '<p style="text-align:center;color:var(--ink-soft);padding:30px">📭 Nessuna analisi salvata.</p>'; return; }
+  $('storicoLista').innerHTML = data.map(r => {
+    const g = (r.report_data && r.report_data.giudizio) ? r.report_data.giudizio : {};
+    const rischio = g.livello_rischio || '?'; const emoji = {BASSO:'✅', MEDIO:'⚠️', ALTO:'🔴'}[rischio] || '❓';
+    return `<div style="border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div style="font-size:28px">${emoji}</div><div style="flex:1"><div style="font-weight:700;font-size:14px">${esc(r.file_names||'Analisi')}</div><div style="font-size:12px;color:var(--ink-soft)">${new Date(r.created_at).toLocaleString('it-IT')}</div></div>
+      <div style="display:flex;gap:6px"><button onclick="caricaAnalisiStorico('${r.id}')" style="background:var(--blue);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:700">📄 Carica</button><button onclick="eliminaAnalisiStorico('${r.id}')" style="background:var(--red-pale);color:var(--red);border:1px solid var(--red-mid);padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:700">🗑️</button></div></div>`;
+  }).join('');
+}
+function chiudiStorico(){ $('modalStoricoBack').classList.add('hidden'); }
+async function caricaAnalisiStorico(id){
+  const {data} = await sb.from('reports').select('report_data, file_names').eq('id', id).single();
+  if(!data || !data.report_data) { alert('Analisi non trovata.'); return; }
+  S.unified = data.report_data; S.results = [{name: data.file_names || 'Analisi', data: data.report_data}]; chiudiStorico();
+  render(S.unified); $('block-progress').classList.add('hidden'); $('block-results').classList.remove('hidden'); $('block-results').scrollIntoView({behavior:'smooth'});
+}
+async function eliminaAnalisiStorico(id){
+  if(!confirm('Eliminare questa analisi?')) return;
+  await sb.from('reports').delete().eq('id', id).eq('user_id', currentUser.id); apriStorico();
+}
+
+// ── ADMIN CREDITI ──
+function apriPannelloAdminCrediti(){ if(!isAdmin) return; $('modalAdminCreditiBack').classList.remove('hidden'); $('adminMsgCrediti').innerHTML = ''; $('adminUserId').value = ''; $('adminQta').value = '10'; $('adminNote').value = ''; }
+function chiudiPannelloAdminCrediti(){ $('modalAdminCreditiBack').classList.add('hidden'); }
+async function eseguiRicaricaCrediti(){
+  const userId = $('adminUserId').value.trim(), qta = parseInt($('adminQta').value), note = $('adminNote').value.trim();
+  if(!userId){ mostraMsgAdmin('Inserisci un ID utente valido.', 'err'); return; }
+  if(!qta || qta < 1){ mostraMsgAdmin('La quantità deve essere almeno 1.', 'err'); return; }
+  const {data: credData} = await sb.from('crediti_utente').select('crediti').eq('user_id', userId).single();
+  const nuovi = (credData ? credData.crediti : 0) + qta;
+  const {error: upErr} = await sb.from('crediti_utente').upsert({user_id: userId, crediti: nuovi, ultima_ricarica: new Date().toISOString()}, {onConflict: 'user_id'});
+  if(upErr){ mostraMsgAdmin('Errore: ' + upErr.message, 'err'); return; }
+  await sb.from('storico_ricariche').insert({admin_id: currentUser.id, user_id: userId, quantita: qta, note: note || 'Ricarica manuale'});
+  const {data: currData} = await sb.from('crediti_utente').select('crediti_totali_acquistati').eq('user_id', userId).single();
+  await sb.from('crediti_utente').update({crediti_totali_acquistati: (currData?.crediti_totali_acquistati || 0) + qta}).eq('user_id', userId);
+  mostraMsgAdmin(`✅ ${qta} crediti aggiunti. Nuovo saldo: ${nuovi}`, 'ok');
+}
+function mostraMsgAdmin(msg, tipo){ $('adminMsgCrediti').innerHTML = `<div class="m-msg ${tipo}">${esc(msg)}</div>`; }
+
+// ── DONAZIONE ──
+function apriModaleDonazione(){
+  if(!currentUser){ openAuthModal('login'); return; }
+  $('modalDonazioneBack').classList.remove('hidden');
+  $('paypalCustomId').value = currentUser.id;
+  document.getElementById('donationAmount').addEventListener('input', function(){
+    document.getElementById('paypalAmount').value = this.value;
+    document.getElementById('creditiPrevisti').textContent = this.value;
+  });
+}
+function chiudiModaleDonazione(){ $('modalDonazioneBack').classList.add('hidden'); }
+
+// ── AUTH UI ──
+function topCtaClick(e){ if(!currentUser){e.preventDefault();openAuthModal('login');return false;} return true; }
+function openAuthModal(tab){ $('authModalBack').classList.remove('hidden'); clearAuthMsg(); if(tab==='register')switchAuthTab('register');else switchAuthTab('login'); }
+function closeAuthModal(){$('authModalBack').classList.add('hidden');clearAuthMsg();}
+function switchAuthTab(tab){
+  $('viewAuth').classList.remove('hidden');$('viewVerifySignup').classList.add('hidden');$('viewForgot').classList.add('hidden');$('viewForgotSent').classList.add('hidden');$('viewReset').classList.add('hidden');clearAuthMsg();
+  if(tab==='login'){ $('formLogin').classList.remove('hidden');$('formRegister').classList.add('hidden');$('tabLogin').classList.add('active');$('tabRegister').classList.remove('active');$('viewAuth').querySelector('.m-tabs').classList.remove('hidden'); }
+  else if(tab==='register'){ $('formLogin').classList.add('hidden');$('formRegister').classList.remove('hidden');$('tabRegister').classList.add('active');$('tabLogin').classList.remove('active');$('viewAuth').querySelector('.m-tabs').classList.remove('hidden'); }
+  else if(tab==='forgot'){ $('viewAuth').classList.add('hidden');$('viewForgot').classList.remove('hidden'); }
+}
+function showAuthMsg(msg,type){$('authMsg').innerHTML=`<div class="m-msg ${type}">${esc(msg)}</div>`;}
+function clearAuthMsg(){$('authMsg').innerHTML='';}
+async function handleRegister(e){e.preventDefault();const email=$('regEmail').value.trim(),phone=$('regPhone').value.trim(),city=$('regCity').value.trim(),password=$('regPassword').value;$('regBtn').disabled=true;$('regBtn').textContent='Attendere…';const{data,error}=await sb.auth.signUp({email,password,options:{data:{phone,city}}});$('regBtn').disabled=false;$('regBtn').textContent='Crea account';if(error){showAuthMsg(error.message,'err');return false;}pendingSignupEmail=email;$('viewAuth').classList.add('hidden');$('viewVerifySignup').classList.remove('hidden');$('verifySignupEmail').textContent=email;clearAuthMsg();return false;}
+async function resendSignupCode(){if(!pendingSignupEmail)return;const{error}=await sb.auth.resend({type:'signup',email:pendingSignupEmail});showAuthMsg(error?error.message:'Email inviata di nuovo.',error?'err':'ok');}
+async function handleLogin(e){e.preventDefault();const email=$('loginEmail').value.trim(),password=$('loginPassword').value;$('loginBtn').disabled=true;$('loginBtn').textContent='Attendere…';const{data,error}=await sb.auth.signInWithPassword({email,password});$('loginBtn').disabled=false;$('loginBtn').textContent='Accedi';if(error){showAuthMsg(error.message,'err');return false;}closeAuthModal();return false;}
+async function authLogout(){await sb.auth.signOut();}
+function requestAccountDeletion(){if(!currentUser)return;window.location.href='mailto:hobbyimprenditore@gmail.com?subject='+encodeURIComponent('Richiesta cancellazione account REPORT')+'&body='+encodeURIComponent('Vorrei cancellare il mio account REPORT.\nLa mia email registrata è: '+currentUser.email);}
+
+// ── ADMIN PANEL ──
+async function openAdminPanel(){
+  if(!isAdmin)return;$('adminModalBack').classList.remove('hidden');$('adminTableWrap').innerHTML='';$('adminCount').textContent='Caricamento…';
+  const[{data:users,error:uErr},{data:reports}]=await Promise.all([sb.from('profiles').select('id,email,phone,city,created_at,is_blocked').order('created_at',{ascending:false}),sb.from('reports').select('user_id,file_names,created_at').order('created_at',{ascending:false})]);
+  if(uErr){$('adminCount').textContent='Errore: '+uErr.message;return;}
+  const byUser={};(reports||[]).forEach(r=>{(byUser[r.user_id]=byUser[r.user_id]||[]).push(r);});
+  $('adminCount').textContent=users.length+' utenti — '+(reports?reports.length:0)+' report';
+  const rows=users.map(u=>{const rl=byUser[u.id]||[];const repList=rl.length?rl.map(r=>esc(r.file_names||'—')+' <span style="color:var(--ink-xs)">('+new Date(r.created_at).toLocaleDateString('it-IT')+')</span>').join('<br>'):'<span style="color:var(--ink-xs)">Nessun report</span>';return `<tr><td>${esc(u.email||'')}</td><td>${esc(u.phone||'—')}</td><td>${esc(u.city||'—')}</td><td>${new Date(u.created_at).toLocaleDateString('it-IT')}</td><td>${u.is_blocked?'Sospeso':'Attivo'}</td><td>${repList}</td></tr>`;}).join('');
+  $('adminTableWrap').innerHTML=`<table><thead><tr><th>Email</th><th>Cellulare</th><th>Città</th><th>Registrato il</th><th>Stato</th><th>Report</th></tr></thead><tbody>${rows}</tbody></table>`;
+  window._adminTableHtml=$('adminTableWrap').innerHTML;window._adminCount=users.length;
+}
+function closeAdminPanel(){$('adminModalBack').classList.add('hidden');}
+function printAdminReport(){if(!window._adminTableHtml)return;$('adminPrintArea').innerHTML=`<h2>Report iscritti</h2>${window._adminTableHtml}`;document.body.classList.add('admin-printing');window.print();const cleanup=()=>{document.body.classList.remove('admin-printing');window.removeEventListener('afterprint',cleanup);};window.addEventListener('afterprint',cleanup);}
+async function handleForgot(e){e.preventDefault();const email=$('forgotEmail').value.trim();$('forgotBtn').disabled=true;const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});$('forgotBtn').disabled=false;if(error){showAuthMsg(error.message,'err');return false;}$('viewForgot').classList.add('hidden');$('viewForgotSent').classList.remove('hidden');clearAuthMsg();return false;}
+async function handleReset(e){e.preventDefault();const newPassword=$('resetPassword').value;$('resetBtn').disabled=true;const{error:updErr}=await sb.auth.updateUser({password:newPassword});$('resetBtn').disabled=false;if(updErr){showAuthMsg(updErr.message,'err');return false;}showAuthMsg('Password aggiornata!','ok');setTimeout(closeAuthModal,1200);return false;}
+
+// ── UPLOAD & ANALYSIS ──
+document.addEventListener('DOMContentLoaded',()=>{setupDrop();$('fileInput').addEventListener('change',e=>addFiles(Array.from(e.target.files)));initAuth();});
+function setupDrop(){const z=$('uploadZone');z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag-over');});z.addEventListener('dragleave',()=>z.classList.remove('drag-over'));z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag-over');addFiles(Array.from(e.dataTransfer.files));});}
+function addFiles(files){const ok=['pdf','txt','doc','docx','png','jpg','jpeg'];for(const f of files){const ext=f.name.split('.').pop().toLowerCase();if(!ok.includes(ext)){alert('Formato non supportato: '+f.name);continue;}if(S.files.find(x=>x.name===f.name))continue;S.files.push({id:'f'+Date.now()+Math.random().toString(36).slice(2,6),file:f,name:f.name,size:f.size,type:ext,text:null,status:'pending'});}renderList();updateBtn();}
+function removeFile(id){S.files=S.files.filter(f=>f.id!==id);renderList();updateBtn();}
+function clearAll(){S.files=[];S.results=[];S.unified=null;renderList();updateBtn();$('fileInput').value='';$('block-progress').classList.add('hidden');$('block-results').classList.add('hidden');$('analyzeWrap').classList.add('hidden');window.scrollTo({top:$('inizia').offsetTop-80,behavior:'smooth'});}
+function renderList(){const list=$('fileList'),wrap=$('analyzeWrap');if(!S.files.length){list.classList.add('hidden');list.innerHTML='';wrap.classList.add('hidden');return;}list.classList.remove('hidden');wrap.classList.remove('hidden');list.innerHTML=S.files.map(f=>`<div class="file-item"><div class="f-ico">${ico(f.type)}</div><div class="f-meta"><div class="f-name">${esc(f.name)}</div><div class="f-size">${fmtSz(f.size)}</div></div><span class="f-badge ${f.status}">${blabel(f.status)}</span><button class="f-del" onclick="removeFile('${f.id}')">✕</button></div>`).join('');}
+function setStat(id,s){const f=S.files.find(f=>f.id===id);if(f)f.status=s;}
+function ico(e){return{pdf:'📕',txt:'📄',doc:'📝',docx:'📝',png:'🖼️',jpg:'🖼️',jpeg:'🖼️'}[e]||'📄';}
+function blabel(s){return{pending:'In attesa',processing:'Analisi…',done:'✓ OK',error:'✕ Errore'}[s]||s;}
+function fmtSz(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
+function updateBtn(){$('analyzeBtn').disabled=!S.files.length;}
+
+// ── ANALISI ──
+async function startAnalysis(){
+  if(!currentUser){openAuthModal('login');return;}
+  if(!S.files.length){alert('Carica almeno un documento.');return;}
+  if(creditiDisponibili !== Infinity && creditiDisponibili < S.files.length){
+    if(!confirm(`Crediti insufficienti: hai ${creditiDisponibili} crediti, ti servono ${S.files.length}. Vuoi donare per riceverne altri?`)) return;
+    apriModaleDonazione(); return;
+  }
+  $('block-progress').classList.remove('hidden');$('block-results').classList.add('hidden');$('analyzeBtn').disabled=true;$('block-progress').scrollIntoView({behavior:'smooth',block:'center'});S.results=[];setP(5,'Avvio analisi…',S.files.length+' documento/i');
+  for(let i=0;i<S.files.length;i++){const f=S.files[i];setStat(f.id,'processing');log('📂 Lettura: '+f.name,'info');try{f.text=await readFile(f);log('✓ Testo estratto','ok');}catch(e){f.text='[Lettura parziale]';log('⚠ Lettura parziale','warn');}setP(5+Math.round((i+1)/S.files.length*25));}
+  for(let i=0;i<S.files.length;i++){const f=S.files[i];if(creditiDisponibili !== Infinity){const ok=await consumaCredito();if(!ok){f.errMsg='Errore credito';setStat(f.id,'error');log('✕ Errore credito: '+f.name,'warn');continue;}}$('progTitle').textContent='Analisi '+(i+1)+' di '+S.files.length;$('progDesc').textContent=f.name;log('⚖️ Analisi: '+f.name,'info');try{const r=await analyze(f.text,f.name);S.results.push({fileId:f.id,name:f.name,data:r});setStat(f.id,'done');log('✓ Completata: '+f.name,'ok');}catch(e){f.errMsg=e.message;setStat(f.id,'error');log('✕ Errore: '+e.message,'warn');}setP(30+Math.round((i+1)/S.files.length*55));}
+  if(!S.results.length){$('progTitle').textContent='❌ Analisi fallita';$('progDesc').textContent='Verifica il formato dei file.';$('analyzeBtn').disabled=false;return;}
+  log('🔗 Consolidamento report…','info');$('progTitle').textContent='Consolidamento…';$('progDesc').textContent='Unificazione dati';
+  try{S.unified=S.results.length>1?await merge(S.results):S.results[0].data;setP(100);log('✅ Report pronto!','ok');saveReportToSupabase();setTimeout(()=>{$('block-progress').classList.add('hidden');render(S.unified);$('block-results').classList.remove('hidden');$('block-results').scrollIntoView({behavior:'smooth'});},700);}catch(e){log('⚠ Merge parziale: '+e.message,'warn');S.unified=S.results[0].data;saveReportToSupabase();render(S.unified);$('block-progress').classList.add('hidden');$('block-results').classList.remove('hidden');}
+  $('analyzeBtn').disabled=false;
+}
+
+async function saveReportToSupabase(){if(!currentUser||!S.unified)return;try{await sb.from('reports').insert({user_id:currentUser.id,file_names:S.files.map(f=>f.name).join(', '),report_data:S.unified});}catch(e){console.error('Salvataggio fallito:',e);}}
+
+function readFile(f){return new Promise((res,rej)=>{const r=new FileReader();if(f.type==='txt'){r.onload=e=>res(e.target.result);r.onerror=()=>rej(new Error('lettura fallita'));r.readAsText(f.file,'utf-8');}else if(['png','jpg','jpeg'].includes(f.type)){r.onload=e=>res('[IMG:'+e.target.result+']');r.onerror=()=>rej(new Error('img fallita'));r.readAsDataURL(f.file);}else if(f.type==='pdf'){r.onload=async e=>{try{const pdf=await pdfjsLib.getDocument({data:e.target.result}).promise;let full='';const maxPages=Math.min(pdf.numPages,60);for(let p=1;p<=maxPages;p++){const page=await pdf.getPage(p);const content=await page.getTextContent();full+=content.items.map(it=>it.str).join(' ')+'\n';}full=full.replace(/\s{3,}/g,' ').trim();if(full.length>80){res(full);}else{const page=await pdf.getPage(1);const viewport=page.getViewport({scale:1.5});const canvas=document.createElement('canvas');canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;res('[IMG:'+canvas.toDataURL('image/jpeg',0.85)+']');}}catch(err){rej(new Error('lettura PDF fallita'));}};r.onerror=()=>rej(new Error('lettura binaria fallita'));r.readAsArrayBuffer(f.file);}else{r.onload=e=>{const a=new Uint8Array(e.target.result);let t='';for(let i=0;i<a.length;i++){const c=a[i];if((c>=32&&c<=126)||c===10||c===13)t+=String.fromCharCode(c);}const lines=t.split('\n').filter(l=>l.trim().length>6);const cl=lines.join('\n').replace(/\s{3,}/g,' ').trim();res(cl.length>80?cl:'[Testo limitato]');};r.onerror=()=>rej(new Error('lettura fallita'));r.readAsArrayBuffer(f.file);}});}
+
+async function claude(messages,system){const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4096,system,messages})});if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+resp.status);}const d=await resp.json();return d.content?.map(b=>b.text||'').join('')||'';}
+
+const SYS=`Sei un avvocato esperto in diritto immobiliare ed esecuzioni forzate con 20 anni di esperienza in Italia. Analizza l'avviso di vendita e restituisci SOLO un JSON valido (null per dati mancanti):
+{"procedura":{"tipo":null,"tribunale":null,"rge":null,"giudice":null,"delegato":null,"data_pubblicazione":null},"immobile":{"tipologia":null,"ubicazione":null,"superficie_catastale":null,"foglio":null,"particella":null,"subalterno":null,"categoria_catastale":null,"rendita_catastale":null,"descrizione":null},"economico":{"prezzo_base_prima_asta":null,"prezzo_base_seconda_asta":null,"offerta_minima":null,"valore_stima":null,"rilanci_minimi":null,"cauzione":null,"sconto_percentuale":null},"vincoli":{"ipoteche":null,"trascrizioni":null,"altri_gravami":null,"occupanti":null,"situazione_giuridica_occupanti":null},"modalita_vendita":{"data_prima_asta":null,"data_seconda_asta":null,"termine_offerte":null,"modalita_offerta":null,"modalita_pagamento":null},"analisi_legale":{"completezza_490cpc":null,"criticita":[],"elementi_attenzione":[],"conformita_normativa":null},"rischi":[],"opportunita":[],"valutazione_economica":null,"spese_stimate":null,"giudizio":{"livello_rischio":null,"convenienza":null,"sintesi":null,"raccomandazione":null}}
+Sii preciso. Usa null (non stringa vuota) per dati assenti. Restituisci SOLO il JSON.`;
+
+async function analyze(text,name){const isImg=text.startsWith('[IMG:');let content;if(isImg){const b64=text.replace('[IMG:','').replace(']','');const[meta,data]=b64.split(',');const mt=meta.match(/data:([^;]+)/)?.[1]||'image/jpeg';content=[{type:'image',source:{type:'base64',media_type:mt,data}},{type:'text',text:'Analizza questo avviso (file: '+name+').'}];}else{content='Analizza il seguente avviso (file: '+name+'):\n\n'+text.slice(0,15000);}const raw=await claude([{role:'user',content}],SYS);try{return JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){throw new Error('JSON non valido');}}
+
+async function merge(results){const prompt='Hai analizzato '+results.length+' documenti.\n\n'+results.map((r,i)=>'--- Doc '+(i+1)+': '+r.name+' ---\n'+JSON.stringify(r.data,null,2)).join('\n\n')+'\n\nCrea un JSON unificato. SOLO JSON valido.';try{const raw=await claude([{role:'user',content:prompt}],'Sei un avvocato esperto. Restituisci SOLO JSON.');return JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){return localMerge(results.map(r=>r.data));}}
+function localMerge(objs){const r={};const keys=[...new Set(objs.flatMap(o=>Object.keys(o||{})))];for(const k of keys){const vals=objs.map(o=>o?.[k]);if(vals.some(v=>v!==null&&!Array.isArray(v)&&typeof v==='object'))r[k]=localMerge(vals.filter(v=>v!==null&&typeof v==='object'&&!Array.isArray(v)));else if(vals.some(Array.isArray))r[k]=[...new Set(vals.filter(Array.isArray).flat())];else r[k]=vals.find(v=>v!==null&&v!==undefined&&v!=='')?? null;}return r;}
+
+// ── RENDER ──
+function render(d){renderVerdict(d);$('tp-panoramica').innerHTML=buildPano(d);$('tp-legale').innerHTML=buildLegal(d);$('tp-economica').innerHTML=buildEco(d);$('tp-rischi').innerHTML=buildRisk(d);$('tp-tabella').innerHTML=buildTbl(d);switchTab('panoramica',document.querySelector('.tab'));}
+function renderVerdict(d){const g=d.giudizio||{};const risk=g.livello_rischio||'MEDIO';const cls={BASSO:'low',MEDIO:'mid',ALTO:'high'}[risk]||'mid';const ico2={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[risk]||'⚠️';const el=$('verdictEl');el.className='verdict '+cls;el.innerHTML=`<div class="v-ico">${ico2}</div><div><div class="v-ey">Giudizio finale</div><div class="v-title">Rischio ${risk} — Convenienza ${g.convenienza||'N/D'}</div><div class="v-desc">${esc(g.sintesi||'Analisi completata.')}</div></div>`;el.classList.remove('hidden');}
+function icard(label,val,big,gn,full){const cls=val?(big?'if-val big':gn?'if-val gn':'if-val'):'if-val nd';return`<div class="info-field${full?' if-full':''}"><div class="if-lbl">${esc(label)}</div><div class="${cls}">${val?esc(String(val)):'N/D'}</div></div>`;}
+function al(type,icon,text){return`<div class="alert ${type}"><span class="al-ico">${icon}</span><div class="al-txt">${esc(text)}</div></div>`;}
+function buildPano(d){const p=d.procedura||{},im=d.immobile||{},ec=d.economico||{},g=d.giudizio||{};const rc={BASSO:'opp',MEDIO:'info',ALTO:'risk'}[g.livello_rischio]||'info';const ri={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️';return`<div class="prose"><h3>📋 Procedura</h3><div class="icard icard-grid">${icard('Tipo procedura',p.tipo)}${icard('Tribunale',p.tribunale)}${icard('Numero RGE',p.rge)}${icard('Giudice',p.giudice)}${icard('Professionista delegato',p.delegato,false,false,true)}${icard('Data pubblicazione',p.data_pubblicazione)}</div><h3>🏠 Immobile</h3><div class="icard icard-grid">${icard('Tipologia',im.tipologia)}${icard('Superficie',im.superficie_catastale)}${icard('Indirizzo',im.ubicazione,false,false,true)}${icard('Categoria catastale',im.categoria_catastale)}${icard('Rendita',im.rendita_catastale)}</div>${im.descrizione?al('info','📝',im.descrizione):''}<h3>💰 Prezzi</h3><div class="icard icard-grid">${icard('Valore di stima',ec.valore_stima,true)}${icard('Prezzo base asta',ec.prezzo_base_prima_asta,true)}${icard('Sconto sul valore',ec.sconto_percentuale,false,true)}${icard('Cauzione',ec.cauzione)}</div><h3>⚖️ Valutazione sintetica</h3>${al(rc,ri,'<strong>Rischio '+g.livello_rischio+' — Convenienza '+(g.convenienza||'?')+'</strong><br/>'+esc(g.sintesi||'')+'<br/><br/><strong>Raccomandazione:</strong> '+esc(g.raccomandazione||''))}</div>`;}
+function buildLegal(d){const al2=d.analisi_legale||{},mo=d.modalita_vendita||{},vin=d.vincoli||{};return`<div class="prose"><h3>📜 Verifica Art. 490 c.p.c.</h3>${al('info','⚖️',al2.completezza_490cpc||'Verifica non disponibile.')}<div class="icard"><div class="if-lbl">Conformità normativa</div><div class="if-val">${esc(al2.conformita_normativa||'N/D')}</div></div><h3>📅 Modalità di vendita</h3><div class="icard icard-grid">${icard('Data prima asta',mo.data_prima_asta)}${icard('Data seconda asta',mo.data_seconda_asta)}${icard('Termine offerte',mo.termine_offerte,false,false,true)}${icard('Modalità offerta',mo.modalita_offerta,false,false,true)}${icard('Modalità pagamento',mo.modalita_pagamento,false,false,true)}</div><h3>🏗️ Vincoli e oneri</h3><div class="icard icard-grid">${icard('Ipoteche',vin.ipoteche,false,false,true)}${icard('Trascrizioni',vin.trascrizioni,false,false,true)}${icard('Altri gravami',vin.altri_gravami,false,false,true)}${icard('Occupanti',vin.occupanti,false,false,true)}${icard('Situazione giuridica',vin.situazione_giuridica_occupanti,false,false,true)}</div>${al2.criticita?.length?'<h3>🚨 Criticità</h3>'+al2.criticita.map(c=>al('risk','⚠️',c)).join(''):''}${al2.elementi_attenzione?.length?'<h3>👁️ Elementi di attenzione</h3>'+al2.elementi_attenzione.map(e=>al('warn','👉',e)).join(''):''}</div>`;}
+function buildEco(d){const ec=d.economico||{};return`<div class="prose"><h3>💰 Prezzi e offerte</h3><div class="icard icard-grid">${icard('Valore di stima',ec.valore_stima,true)}${icard('Prezzo base prima asta',ec.prezzo_base_prima_asta,true)}${icard('Prezzo base seconda asta',ec.prezzo_base_seconda_asta)}${icard('Offerta minima',ec.offerta_minima)}${icard('Sconto sulla stima',ec.sconto_percentuale,false,true)}${icard('Rilanci minimi',ec.rilanci_minimi)}${icard('Cauzione da versare',ec.cauzione,false,false,true)}</div><h3>📈 Analisi del valore</h3>${al('info','🔍',d.valutazione_economica||'Analisi non disponibile.')}<h3>🧾 Spese aggiuntive stimate</h3>${al('warn','💡',d.spese_stimate||'Considera: imposte di registro o IVA, onorari notarili, eventuali spese per sgombero occupanti, costi di ristrutturazione.')}</div>`;}
+function buildRisk(d){const r=d.rischi||[],o=d.opportunita||[],g=d.giudizio||{};const rc={BASSO:'opp',MEDIO:'info',ALTO:'risk'}[g.livello_rischio]||'info';const ri={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️';return`<div class="prose"><h3>🔴 Rischi</h3>${r.length?r.map(x=>al('risk','⚠️',x)).join(''):al('opp','✅','Nessun rischio.')}<h3>🟢 Opportunità</h3>${o.length?o.map(x=>al('opp','💚',x)).join(''):'<p>Nessuna opportunità.</p>'}<h3>⚖️ Raccomandazione</h3>${al(rc,ri,g.raccomandazione||'Consulta un avvocato.')}</div>`;}
+function buildTbl(d){const p=d.procedura||{},im=d.immobile||{},ec=d.economico||{},vin=d.vincoli||{},mo=d.modalita_vendita||{},al3=d.analisi_legale||{},g=d.giudizio||{};const secs=[{cat:'Dati Procedura',rows:[['Tipo',p.tipo],['Tribunale',p.tribunale],['RGE',p.rge],['Giudice',p.giudice],['Delegato',p.delegato],['Pubblicazione',p.data_pubblicazione]]},{cat:'Immobile',rows:[['Tipologia',im.tipologia],['Ubicazione',im.ubicazione],['Superficie',im.superficie_catastale],['Categoria',im.categoria_catastale],['Rendita',im.rendita_catastale]]},{cat:'Economici',rows:[['Valore stima',ec.valore_stima],['Base 1ª asta',ec.prezzo_base_prima_asta],['Base 2ª asta',ec.prezzo_base_seconda_asta],['Offerta minima',ec.offerta_minima],['Sconto',ec.sconto_percentuale],['Rilanci',ec.rilanci_minimi],['Cauzione',ec.cauzione]]},{cat:'Vincoli',rows:[['Ipoteche',vin.ipoteche],['Trascrizioni',vin.trascrizioni],['Altri gravami',vin.altri_gravami],['Occupanti',vin.occupanti]]},{cat:'Vendita',rows:[['Data 1ª asta',mo.data_prima_asta],['Data 2ª asta',mo.data_seconda_asta],['Termine offerte',mo.termine_offerte],['Modalità',mo.modalita_offerta],['Pagamento',mo.modalita_pagamento]]},{cat:'Giudizio',rows:[['Livello rischio',g.livello_rischio],['Convenienza',g.convenienza],['Sintesi',g.sintesi],['Raccomandazione',g.raccomandazione]]}];let rows='';for(const s of secs){for(let i=0;i<s.rows.length;i++){const[k,v2]=s.rows[i];rows+=`<tr>${i===0?`<td class="dt-cat" rowspan="${s.rows.length}">${esc(s.cat)}</td>`:''}<td class="dt-key">${esc(k)}</td><td class="${v2?'dt-val':'dt-nd'}">${v2?esc(String(v2)):'N/D'}</td></tr>`;}}return`<div class="tbl-wrap"><table class="dtbl"><thead><tr><th>Categoria</th><th>Dato</th><th>Valore</th></tr></thead><tbody>${rows}</tbody></table></div>`;}
+function switchTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));document.querySelector('.tab[onclick*="'+name+'"]')?.classList.add('active');$('tp-'+name)?.classList.add('active');}
+
+// ── EXPORT ──
+function exportHTML(){if(!S.unified)return;const d=S.unified,g=d.giudizio||{};const rc={BASSO:'#16a34a',MEDIO:'#d97706',ALTO:'#dc2626'}[g.livello_rischio]||'#6b7280';const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>REPORT Asta</title><style>body{font-family:sans-serif;max-width:900px;margin:40px auto;padding:20px;color:#111;line-height:1.7}h1{font-size:26px}h2{font-size:19px;border-bottom:2px solid #e5e7eb;padding-bottom:7px;margin-top:28px}.v{padding:18px;border-radius:10px;border:2px solid ${rc};background:${rc}18;margin:22px 0;display:flex;gap:14px}.v-t{font-size:19px;font-weight:800;color:${rc}}.risk{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d;padding:12px;border-radius:8px;margin:8px 0}.opp{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d;padding:12px;border-radius:8px;margin:8px 0}table{width:100%;border-collapse:collapse}th{background:#0f1117;color:white;padding:10px;text-align:left}td{padding:9px;border-bottom:1px solid #e5e7eb}@media print{body{margin:10px}}</style></head><body><h1>⚖️ REPORT — Analisi Asta</h1><div class="meta">${new Date().toLocaleString('it-IT')} | Documenti: ${S.results.length}</div><div class="v"><div style="font-size:40px">${{BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️'}</div><div><div class="v-t">Rischio ${g.livello_rischio||'?'} — Convenienza ${g.convenienza||'?'}</div><div>${esc(g.sintesi||'')}</div></div></div><h2>Tabella Dati</h2>${buildTbl(d).replace(/class="tbl-wrap"/g,'')}<p style="font-size:11px;color:#9ca3af;margin-top:36px">⚠️ Non costituisce consulenza legale.</p></body></html>`;dl('report_asta.html',html,'text/html');}
+function exportTxt(){if(!S.unified)return;const d=S.unified;const n=v=>v||'N/D';const txt=`REPORT Asta — ${new Date().toLocaleString('it-IT')}\nRischio: ${n(d.giudizio?.livello_rischio)} | Convenienza: ${n(d.giudizio?.convenienza)}\nSintesi: ${n(d.giudizio?.sintesi)}\n\nDati principali:\n${JSON.stringify(d,null,2)}\n\n⚠️ Non costituisce consulenza legale.`;dl('report_asta.txt',txt,'text/plain');}
+function dl(name,content,mime){const b=new Blob([content],{type:mime+';charset=utf-8'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+
+// ── HELPERS ──
+function setP(pct,title,desc){$('progBar').style.width=pct+'%';if(title)$('progTitle').textContent=title;if(desc)$('progDesc').textContent=desc;}
+function log(msg,type){const el=document.createElement('div');el.className='plog '+(type||'info');el.textContent=msg;$('progLog').appendChild(el);$('progLog').scrollTop=$('progLog').scrollHeight;}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>
