@@ -1218,14 +1218,16 @@ async function startAnalysis(){
 
 // Salva il report generato collegato all'utente, per la consultazione nel pannello proprietario
 async function saveReportToSupabase(){
-  if(!currentUser||!S.unified)return;
-  try{
+  if(!currentUser || !S.unified) return;
+  try {
     await sb.from('reports').insert({
-      user_id:currentUser.id,
-      file_names:S.files.map(f=>f.name).join(', '),
-      report_data:S.unified
+      user_id: currentUser.id,
+      file_names: S.files.map(f => f.name).join(', '),
+      report_data: S.unified
     });
-  }catch(e){/* il salvataggio del report non deve mai bloccare la visualizzazione del risultato */}
+  } catch(e){
+    console.error('Salvataggio report fallito:', e);
+  }
 }
 
 function readFile(f){
