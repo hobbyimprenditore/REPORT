@@ -728,7 +728,30 @@
 
 <!-- Area usata solo in fase di stampa del report admin -->
 <div id="adminPrintArea" class="hidden"></div>
+  
+<!-- MODALE STORICO ANALISI -->
+<div class="modal-back hidden" id="modalStoricoBack" onclick="if(event.target===this)chiudiStorico()">
+  <div class="modal-box" style="max-width:700px">
+    <button class="m-close" onclick="chiudiStorico()">✕</button>
+    <h3>📊 Storico delle tue analisi</h3>
+    <p class="m-sub">Tutte le analisi che hai generato. Clicca su "Carica" per rivederle, o su 🗑️ per eliminarle.</p>
+    <div id="storicoLista" style="max-height:55vh;overflow-y:auto"></div>
+  </div>
+</div>
 
+<!-- MODALE ADMIN RICARICA CREDITI -->
+<div class="modal-back hidden" id="modalAdminCreditiBack" onclick="if(event.target===this)chiudiPannelloAdminCrediti()">
+  <div class="modal-box" style="max-width:500px">
+    <button class="m-close" onclick="chiudiPannelloAdminCrediti()">✕</button>
+    <h3>👑 Ricarica Crediti Utente</h3>
+    <p class="m-sub">Inserisci l'ID dell'utente e la quantità di crediti da aggiungere.</p>
+    <div id="adminMsgCrediti"></div>
+    <div class="m-field"><label>ID Utente (UUID)</label><input type="text" id="adminUserId" placeholder="es. a1b2c3d4-..."></div>
+    <div class="m-field"><label>Quantità crediti</label><input type="number" id="adminQta" min="1" value="10"></div>
+    <div class="m-field"><label>Note (opzionale)</label><input type="text" id="adminNote" placeholder="es. Ricarica WhatsApp"></div>
+    <button class="m-submit" onclick="eseguiRicaricaCrediti()">💰 Ricarica</button>
+  </div>
+</div>
 <script>
 'use strict';
   // ── CREDITI & STORICO ──
