@@ -699,14 +699,15 @@ async function eseguiRicaricaCrediti(){
   const userId = $('adminUserId').value.trim(), qta = parseInt($('adminQta').value), note = $('adminNote').value.trim();
   if(!userId){ mostraMsgAdmin('Inserisci un ID utente valido.', 'err'); return; }
   if(!qta || qta < 1){ mostraMsgAdmin('La quantità deve essere almeno 1.', 'err'); return; }
-  const {data: credData} = await sb.from('crediti_utente').select('crediti').eq('user_id', userId).single();
-  const nuovi = (credData ? credData.crediti : 0) + qta;
-  const {error: upErr} = await sb.from('crediti_utente').upsert({user_id: userId, crediti: nuovi, ultima_ricarica: new Date().toISOString()}, {onConflict: 'user_id'});
+  
+  const {error: upErr} = await sb.rpc('ricarica_crediti', {
+    target_user_id: userId,
+    quantita: qta,
+    note: note || 'Ricarica manuale'
+  });
+  
   if(upErr){ mostraMsgAdmin('Errore: ' + upErr.message, 'err'); return; }
-  await sb.from('storico_ricariche').insert({admin_id: currentUser.id, user_id: userId, quantita: qta, note: note || 'Ricarica manuale'});
-  const {data: currData} = await sb.from('crediti_utente').select('crediti_totali_acquistati').eq('user_id', userId).single();
-  await sb.from('crediti_utente').update({crediti_totali_acquistati: (currData?.crediti_totali_acquistati || 0) + qta}).eq('user_id', userId);
-  mostraMsgAdmin(`✅ ${qta} crediti aggiunti. Nuovo saldo: ${nuovi}`, 'ok');
+  mostraMsgAdmin(`✅ ${qta} crediti aggiunti.`, 'ok');
 }
 function mostraMsgAdmin(msg, tipo){ $('adminMsgCrediti').innerHTML = `<div class="m-msg ${tipo}">${esc(msg)}</div>`; }
 
