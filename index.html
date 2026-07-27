@@ -747,7 +747,7 @@ async function openAdminPanel(){
   const byUser={};(reports||[]).forEach(r=>{(byUser[r.user_id]=byUser[r.user_id]||[]).push(r);});
   $('adminCount').textContent=users.length+' utenti — '+(reports?reports.length:0)+' report';
   const rows=users.map(u=>{const rl=byUser[u.id]||[];const repList=rl.length?rl.map(r=>esc(r.file_names||'—')+' <span style="color:var(--ink-xs)">('+new Date(r.created_at).toLocaleDateString('it-IT')+')</span>').join('<br>'):'<span style="color:var(--ink-xs)">Nessun report</span>';return `<tr><td>${esc(u.email||'')}</td><td>${esc(u.phone||'—')}</td><td>${esc(u.city||'—')}</td><td>${new Date(u.created_at).toLocaleDateString('it-IT')}</td><td>${u.is_blocked?'Sospeso':'Attivo'}</td><td>${repList}</td></tr>`;}).join('');
-  $('adminTableWrap').innerHTML=`<table><thead><tr><th>Email</th><th>Cellulare</th><th>Città</th><th>Registrato il</th><th>Stato</th><th>Report</th></tr></thead><tbody>${rows}</tbody></table>`;
+ $('adminTableWrap').innerHTML=`<table><thead><tr><th>ID Utente</th><th>Email</th><th>Cellulare</th><th>Città</th><th>Registrato il</th><th>Stato</th><th>Report</th></tr></thead><tbody>${rows}</tbody></table>`;
   window._adminTableHtml=$('adminTableWrap').innerHTML;window._adminCount=users.length;
 }
 function closeAdminPanel(){$('adminModalBack').classList.add('hidden');}
