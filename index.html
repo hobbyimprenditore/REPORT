@@ -29,7 +29,7 @@
     .container{max-width:960px;margin:0 auto;padding:0 24px}
     .hidden{display:none!important}
 
-    /* ── TOPBAR ── */
+    /* TOPBAR */
     .topbar{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
     .topbar-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
     .brand{display:flex;align-items:center;gap:12px}
@@ -42,7 +42,7 @@
     .topbar-cta{background:var(--blue)!important;color:white!important;padding:8px 18px;border-radius:8px;font-weight:700!important}
     .topbar-cta:hover{background:var(--blue-dark)!important}
 
-    /* ── HERO ── */
+    /* HERO */
     .hero{background:linear-gradient(135deg,#0f1117 0%,#1e2433 100%);color:white;padding:72px 24px 88px;display:flex;align-items:center;justify-content:center;gap:56px;flex-wrap:wrap}
     .hero-content{max-width:500px}
     .hero-pill{display:inline-block;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:100px;padding:6px 16px;font-size:13px;font-weight:600;margin-bottom:22px;color:rgba(255,255,255,.85)}
@@ -67,7 +67,7 @@
     .hc-val.hi{color:var(--blue);font-size:15px}.hc-val.gn{color:var(--green)}
     .hc-verdict{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;border-radius:8px;font-size:12px;font-weight:700;background:var(--green-pale);color:var(--green);border:1px solid var(--green-mid)}
 
-    /* ── STEPS ── */
+    /* STEPS */
     .steps{padding:72px 0;background:var(--white);border-bottom:1px solid var(--border)}
     .eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-bottom:8px}
     .sec-title{font-size:clamp(24px,4vw,36px);font-weight:800;letter-spacing:-.02em;margin-bottom:44px}
@@ -80,7 +80,7 @@
     .step p{font-size:14px;color:var(--ink-mid);line-height:1.65}
     .step-arr{font-size:26px;color:var(--border-mid);padding:0 6px;flex-shrink:0}
 
-    /* ── APP ── */
+    /* APP */
     .app-sec{padding:56px 0}
     .block{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:36px;margin-bottom:20px;box-shadow:var(--sh-sm)}
     .block-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--blue);margin-bottom:6px}
@@ -237,7 +237,7 @@
     .site-footer p{font-size:13px;margin-bottom:7px}
     .ft-disc{font-size:11px;opacity:.55;line-height:1.6;margin-top:14px}
 
-    /* ── SOCIAL SECTION ── */
+    /* SOCIAL SECTION */
     .social-sec{background:linear-gradient(135deg,#0f1117 0%,#1a1f2e 100%);padding:80px 0;border-top:3px solid #f97316}
     .social-inner{max-width:760px;margin:0 auto}
     .social-title{font-size:clamp(28px,4vw,42px);font-weight:800;color:white;line-height:1.15;margin-bottom:16px;letter-spacing:-.02em}
@@ -273,6 +273,11 @@
     .ft-social-mini a:hover{background:rgba(255,255,255,.15);color:white;transform:translateY(-2px)}
     @media(max-width:600px){.review-box{flex-direction:column;gap:12px}.social-card{padding:14px 16px}.sc-handle{font-size:15px}}
 
+    /* Crediti bassi */
+    #creditiDisplay.low { background: #fff3cd; border-color: #f59e0b; color: #92400e; }
+    #creditiDisplay.low span:first-child { animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
     /* Print */
     @media print{
       .topbar,.hero,.steps,.faq-sec,.site-footer,.exp-btns,.tabs,.res-foot,.btn-reset,.analyze-wrap,.block:not(#block-results),.block-label{display:none!important}
@@ -303,7 +308,7 @@
       .res-top{flex-direction:column;align-items:flex-start}
     }
 
-    /* ── AUTH ── */
+    /* AUTH */
     .user-badge{display:flex;align-items:center;gap:10px;font-size:14px}
     .user-badge .u-email{color:var(--ink-mid);font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .user-badge .u-logout{background:var(--bg);border:1px solid var(--border);color:var(--ink-mid);padding:7px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:13px}
@@ -356,15 +361,15 @@
       <a href="#come-funziona">Come funziona</a>
       <a href="#inizia" class="topbar-cta" id="ctaInizia" onclick="return topCtaClick(event)">Inizia →</a>
       <!-- Display Crediti -->
-<div id="creditPanel" class="hidden" style="display:flex;align-items:center;gap:8px;margin-right:8px">
-  <div id="creditiDisplay" style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--ink-mid);display:flex;align-items:center;gap:6px">
-    <span>🪙</span>
-    <span id="creditiCount">0</span>
-    <span style="font-weight:400;color:var(--ink-soft)">crediti</span>
-  </div>
-  <button onclick="apriStorico()" title="Storico analisi" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-mid);cursor:pointer;white-space:nowrap">📊 Storico</button>
-  <button onclick="apriPannelloAdminCrediti()" id="btnAdminCrediti" title="Ricarica crediti (Admin)" style="display:none;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:8px;padding:6px 12px;font-family:var(--font);font-size:13px;font-weight:700;color:white;cursor:pointer;white-space:nowrap">👑 Ricarica</button>
-</div>
+      <div id="creditPanel" class="hidden" style="display:flex;align-items:center;gap:8px;margin-right:8px">
+        <div id="creditiDisplay" style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--ink-mid);display:flex;align-items:center;gap:6px">
+          <span>🪙</span>
+          <span id="creditiCount">0</span>
+          <span style="font-weight:400;color:var(--ink-soft)">crediti</span>
+        </div>
+        <button onclick="apriStorico()" title="Storico analisi" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-mid);cursor:pointer;white-space:nowrap">📊 Storico</button>
+        <button onclick="apriPannelloAdminCrediti()" id="btnAdminCrediti" title="Ricarica crediti (Admin)" style="display:none;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:8px;padding:6px 12px;font-family:var(--font);font-size:13px;font-weight:700;color:white;cursor:pointer;white-space:nowrap">👑 Ricarica</button>
+      </div>
       <div class="user-badge hidden" id="userBadge">
         <span class="u-email" id="userEmail"></span>
         <a href="https://www.paypal.com/donate/?hosted_button_id=VT9GSFLFTN3V6" target="_blank" class="u-donate" title="Sostieni il progetto">❤️ Dona</a>
@@ -379,17 +384,12 @@
 <div class="modal-back hidden" id="authModalBack" onclick="if(event.target===this)closeAuthModal()">
   <div class="modal-box">
     <button class="m-close" onclick="closeAuthModal()">✕</button>
-
     <div id="authMsg"></div>
-
-    <!-- LOGIN / REGISTER -->
     <div id="viewAuth">
       <div class="m-tabs">
         <div class="m-tab active" id="tabLogin" onclick="switchAuthTab('login')">Accedi</div>
         <div class="m-tab" id="tabRegister" onclick="switchAuthTab('register')">Registrati</div>
       </div>
-
-      <!-- LOGIN FORM -->
       <form id="formLogin" onsubmit="return handleLogin(event)">
         <h3>Bentornato</h3>
         <p class="m-sub">Accedi per usare lo strumento di analisi.</p>
@@ -398,31 +398,22 @@
         <button class="m-submit" type="submit" id="loginBtn">Accedi</button>
         <div class="m-foot"><button type="button" class="m-link" onclick="switchAuthTab('forgot')">Password dimenticata?</button></div>
       </form>
-
-      <!-- REGISTER FORM -->
       <form id="formRegister" class="hidden" onsubmit="return handleRegister(event)">
         <h3>Crea il tuo account</h3>
         <p class="m-sub">Necessario per analizzare gli avvisi.</p>
         <div class="m-field"><label>Email</label><input type="email" id="regEmail" required></div>
         <div class="m-field"><label>Numero di cellulare</label><input type="tel" id="regPhone" required placeholder="+39 333 1234567"></div>
-        <div class="m-field">
-          <label>Città di residenza</label>
-          <input type="text" id="regCity" required placeholder="es. Milano">
-        </div>
+        <div class="m-field"><label>Città di residenza</label><input type="text" id="regCity" required placeholder="es. Milano"></div>
         <div class="m-field"><label>Password</label><input type="password" id="regPassword" required minlength="6"></div>
         <button class="m-submit" type="submit" id="regBtn">Crea account</button>
       </form>
     </div>
-
-    <!-- SIGNUP: CONTROLLA EMAIL -->
     <div id="viewVerifySignup" class="hidden">
       <h3>Controlla la tua email</h3>
       <p class="m-sub">Abbiamo inviato un link di conferma a <strong id="verifySignupEmail"></strong>. Cliccalo per attivare l'account, poi torna qui e accedi.</p>
       <button class="m-submit" type="button" onclick="switchAuthTab('login')">Ho confermato, vai al login</button>
       <div class="m-foot"><button type="button" class="m-link" onclick="resendSignupCode()">Non hai ricevuto l'email? Invia di nuovo</button></div>
     </div>
-
-    <!-- FORGOT PASSWORD -->
     <div id="viewForgot" class="hidden">
       <h3>Recupera password</h3>
       <p class="m-sub">Ti invieremo un link via email per reimpostare la password.</p>
@@ -432,15 +423,11 @@
       </form>
       <div class="m-foot"><button type="button" class="m-link" onclick="switchAuthTab('login')">Torna al login</button></div>
     </div>
-
-    <!-- FORGOT: EMAIL INVIATA -->
     <div id="viewForgotSent" class="hidden">
       <h3>Controlla la tua email</h3>
-      <p class="m-sub">Ti abbiamo inviato un link per reimpostare la password. Cliccalo: si aprirà automaticamente il modulo per la nuova password.</p>
+      <p class="m-sub">Ti abbiamo inviato un link per reimpostare la password.</p>
       <button class="m-submit" type="button" onclick="switchAuthTab('login')">Torna al login</button>
     </div>
-
-    <!-- RESET PASSWORD (aperto automaticamente cliccando il link ricevuto via email) -->
     <div id="viewReset" class="hidden">
       <h3>Imposta nuova password</h3>
       <p class="m-sub">Scegli la tua nuova password.</p>
@@ -449,8 +436,6 @@
         <button class="m-submit" type="submit" id="resetBtn">Reimposta password</button>
       </form>
     </div>
-
-
   </div>
 </div>
 
@@ -506,8 +491,6 @@
 <!-- APP -->
 <section class="app-sec" id="inizia">
   <div class="container">
-
-    <!-- PASSO 1: UPLOAD -->
     <div class="block" id="block-upload">
       <div class="auth-overlay hidden" id="authGate">
         <div class="lock">🔒</div>
@@ -518,7 +501,6 @@
       <div class="block-label">Passo 1</div>
       <h2>Carica i tuoi documenti</h2>
       <p class="block-desc">Puoi caricare uno o più file contemporaneamente. Formati accettati: <strong>PDF, TXT, Word, immagini JPG/PNG</strong></p>
-
       <div class="upload-zone" id="uploadZone">
         <input type="file" id="fileInput" multiple accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg" class="file-input-h" />
         <div class="up-cloud">☁️</div>
@@ -528,9 +510,7 @@
         <button class="btn-pick" onclick="event.stopPropagation();document.getElementById('fileInput').click()">📂 Scegli file dal computer</button>
         <p class="up-hint">PDF · TXT · DOC · DOCX · PNG · JPG &nbsp;|&nbsp; Più file contemporaneamente ✓</p>
       </div>
-
       <div id="fileList" class="file-list hidden"></div>
-
       <div id="analyzeWrap" class="analyze-wrap hidden">
         <button class="btn-analyze" id="analyzeBtn" onclick="startAnalysis()" disabled>
           <span class="ba-ico">⚖️</span>
@@ -543,8 +523,6 @@
         <button class="btn-reset" onclick="clearAll()">✕ Ricomincia</button>
       </div>
     </div>
-
-    <!-- PROGRESS -->
     <div class="block hidden" id="block-progress">
       <div class="block-label">In corso…</div>
       <h2>Analisi in corso, attendi</h2>
@@ -559,11 +537,8 @@
       <div class="prog-track"><div class="prog-fill" id="progBar"></div></div>
       <div class="prog-log" id="progLog"></div>
     </div>
-
-    <!-- RESULTS -->
     <div class="block hidden" id="block-results">
       <div id="verdictEl" class="hidden"></div>
-
       <div class="res-top">
         <div>
           <div class="block-label">Il tuo Report</div>
@@ -575,7 +550,6 @@
           <button class="btn-exp" onclick="window.print()">🖨 Stampa</button>
         </div>
       </div>
-
       <div class="tabs">
         <button class="tab active" onclick="switchTab('panoramica',this)">🏠 Panoramica</button>
         <button class="tab" onclick="switchTab('legale',this)">⚖️ Legale</button>
@@ -583,18 +557,15 @@
         <button class="tab" onclick="switchTab('rischi',this)">🔍 Rischi</button>
         <button class="tab" onclick="switchTab('tabella',this)">📋 Tutti i dati</button>
       </div>
-
       <div class="tab-pane active" id="tp-panoramica"></div>
       <div class="tab-pane" id="tp-legale"></div>
       <div class="tab-pane" id="tp-economica"></div>
       <div class="tab-pane" id="tp-rischi"></div>
       <div class="tab-pane" id="tp-tabella"></div>
-
       <div class="res-foot">
         <button class="btn-new" onclick="clearAll()">+ Analizza un altro documento</button>
       </div>
     </div>
-
   </div>
 </section>
 
@@ -633,13 +604,9 @@
         <h2 class="social-title">Ti è stato utile?<br/>Resta in contatto! 🙌</h2>
         <p class="social-desc">Questo strumento è realizzato con passione da <strong>Hobby Imprenditore</strong>. Se lo hai trovato utile, iscriviti al canale YouTube per altri contenuti su investimenti, aste e imprenditoria accessibile a tutti. Lascia anche un commento — i tuoi consigli mi aiutano a migliorare!</p>
         <div class="social-cards">
-
-          <!-- YOUTUBE -->
           <a href="https://www.youtube.com/@HobbyImprenditore?sub_confirmation=1" target="_blank" class="social-card yt">
             <div class="sc-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             </div>
             <div class="sc-info">
               <div class="sc-name">YouTube</div>
@@ -647,13 +614,9 @@
               <div class="sc-cta">🔔 Iscriviti al canale →</div>
             </div>
           </a>
-
-          <!-- INSTAGRAM -->
           <a href="https://www.instagram.com/hobby_imprenditore/" target="_blank" class="social-card ig">
             <div class="sc-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
             </div>
             <div class="sc-info">
               <div class="sc-name">Instagram</div>
@@ -661,13 +624,9 @@
               <div class="sc-cta">❤️ Seguimi →</div>
             </div>
           </a>
-
-          <!-- EMAIL -->
           <a href="mailto:hobbyimprenditore@gmail.it" class="social-card em">
             <div class="sc-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
-                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
             </div>
             <div class="sc-info">
               <div class="sc-name">Email</div>
@@ -675,22 +634,18 @@
               <div class="sc-cta">✉️ Scrivimi →</div>
             </div>
           </a>
-
         </div>
-
-        <!-- REVIEW CTA -->
         <div class="review-box">
           <div class="review-emoji">💬</div>
           <div class="review-content">
             <div class="review-title">Lascia un consiglio o una recensione!</div>
-            <p class="review-desc">Hai usato REPORT per analizzare un'asta? Scrivimi su Instagram o via email per dirmi com'è andata, suggerire miglioramenti o segnalare eventuali problemi. Ogni feedback mi aiuta a rendere questo strumento sempre più utile per tutti.</p>
+            <p class="review-desc">Hai usato REPORT per analizzare un'asta? Scrivimi su Instagram o via email per dirmi com'è andata, suggerire miglioramenti o segnalare eventuali problemi.</p>
             <div class="review-btns">
               <a href="https://www.instagram.com/hobby_imprenditore/" target="_blank" class="rbtn rbtn-ig">📸 Scrivimi su Instagram</a>
               <a href="mailto:hobbyimprenditore@gmail.it" class="rbtn rbtn-em">✉️ Invia una email</a>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -701,21 +656,15 @@
   <div class="ft-brand">⚖️ REPORT</div>
   <p>Analisi Aste Immobiliari — by <strong style="color:#f97316">Hobby Imprenditore</strong> — Powered by Claude AI</p>
   <div class="ft-social-mini">
-    <a href="https://www.youtube.com/@HobbyImprenditore?sub_confirmation=1" target="_blank" title="YouTube">
-      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-    </a>
-    <a href="https://www.instagram.com/hobby_imprenditore/" target="_blank" title="Instagram">
-      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-    </a>
-    <a href="mailto:hobbyimprenditore@gmail.it" title="Email">
-      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-    </a>
+    <a href="https://www.youtube.com/@HobbyImprenditore?sub_confirmation=1" target="_blank" title="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+    <a href="https://www.instagram.com/hobby_imprenditore/" target="_blank" title="Instagram"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+    <a href="mailto:hobbyimprenditore@gmail.it" title="Email"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>
   </div>
   <p class="ft-disc">⚠️ Strumento di supporto informativo. Non costituisce consulenza legale professionale ai sensi della L. 247/2012.</p>
   <span id="adminGear" class="hidden" onclick="openAdminPanel()" style="display:inline-block;margin-top:14px;font-size:13px;color:rgba(255,255,255,.25);cursor:pointer;">⚙</span>
 </footer>
 
-<!-- ADMIN MODAL (visibile solo al proprietario) -->
+<!-- ADMIN MODAL -->
 <div class="modal-back hidden" id="adminModalBack" onclick="if(event.target===this)closeAdminPanel()">
   <div class="modal-box" style="max-width:820px">
     <button class="m-close" onclick="closeAdminPanel()">✕</button>
@@ -725,10 +674,8 @@
     <button class="m-submit" onclick="printAdminReport()">🖨 Stampa / Esporta PDF</button>
   </div>
 </div>
-
-<!-- Area usata solo in fase di stampa del report admin -->
 <div id="adminPrintArea" class="hidden"></div>
-  
+
 <!-- MODALE STORICO ANALISI -->
 <div class="modal-back hidden" id="modalStoricoBack" onclick="if(event.target===this)chiudiStorico()">
   <div class="modal-box" style="max-width:700px">
@@ -752,18 +699,20 @@
     <button class="m-submit" onclick="eseguiRicaricaCrediti()">💰 Ricarica</button>
   </div>
 </div>
+
 <script>
 'use strict';
-  // ── CREDITI & STORICO ──
+
+// ── CREDITI & STORICO ──
 let creditiDisponibili = 0;
-const COSTO_ANALISI = 1; // crediti consumati per ogni analisi
-  
-const WORKER_URL = 'https://silent-leaf-495dhobbyimprenditore.hobbyimprenditore.workers.dev/'; // ← Sostituisci con l'URL del tuo Cloudflare Worker
+const COSTO_ANALISI = 1;
+
+const WORKER_URL = 'https://silent-leaf-495dhobbyimprenditore.hobbyimprenditore.workers.dev/';
 const S={files:[],results:[],unified:null};
 const $=id=>document.getElementById(id);
 if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}
 
-// ── SUPABASE AUTH ──
+// ── SUPABASE ──
 const SUPABASE_URL='https://hvmnernovucnsksszsbe.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_5bBF51zEshWF3YtBh-YQoA_keV7WfCH';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
@@ -789,7 +738,6 @@ async function initAuth(){
   });
 }
 
-// Controlla se l'utente è stato sospeso dal proprietario del sito prima di dare accesso
 async function afterAuthCheck(session){
   const {data:profile}=await sb.from('profiles').select('is_blocked,is_admin').eq('id',session.user.id).single();
   if(profile && profile.is_blocked){
@@ -802,34 +750,35 @@ async function afterAuthCheck(session){
   isAdmin = !!(profile && profile.is_admin);
   $('adminGear').classList.toggle('hidden', !isAdmin);
   setAuthUI(session.user);
-  
-  // Carica crediti dal database
   await caricaCrediti();
-  // Mostra il pannello crediti nella topbar
   $('creditPanel').classList.remove('hidden');
 }
 
 function setAuthUI(user){
-  currentUser=user;
-  const badge=$('userBadge'),cta=$('ctaInizia'),gate=$('authGate');
+  currentUser = user;
+  const badge = $('userBadge'), cta = $('ctaInizia'), gate = $('authGate'), cp = $('creditPanel');
+  const adminBtn = $('btnAdminCrediti');
   if(user){
-    badge.classList.remove('hidden');
-    cta.classList.add('hidden');
-    $('userEmail').textContent=user.email;
-    gate.classList.add('hidden');
-  }else{
-    badge.classList.add('hidden');
-    cta.classList.remove('hidden');
-    gate.classList.remove('hidden');
+    if(badge) badge.classList.remove('hidden');
+    if(cta) cta.classList.add('hidden');
+    if(gate) gate.classList.add('hidden');
+    if(cp) cp.classList.remove('hidden');
+    if($('userEmail')) $('userEmail').textContent = user.email;
+    if(adminBtn) adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
+  } else {
+    if(badge) badge.classList.add('hidden');
+    if(cta) cta.classList.remove('hidden');
+    if(gate) gate.classList.remove('hidden');
+    if(cp) cp.classList.add('hidden');
+    if(adminBtn) adminBtn.style.display = 'none';
   }
 }
-  // ── GESTIONE CREDITI ──
+
+// ── CREDITI ──
 async function caricaCrediti(){
   if(!currentUser) return;
-  // Assicura che esista il record crediti
   const {data} = await sb.from('crediti_utente').select('crediti').eq('user_id', currentUser.id).single();
   if(!data){
-    // Crea record iniziale con 3 crediti omaggio
     await sb.from('crediti_utente').insert({user_id: currentUser.id, crediti: 3, crediti_totali_acquistati: 3});
     creditiDisponibili = 3;
   } else {
@@ -853,52 +802,30 @@ function aggiornaDisplayCrediti(){
   $('creditiDisplay').classList.toggle('low', creditiDisponibili < 2);
 }
 
-// ── STORICO ANALISI ──
+// ── STORICO ──
 async function apriStorico(){
   if(!currentUser) return;
   $('modalStoricoBack').classList.remove('hidden');
   $('storicoLista').innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-soft)">Caricamento…</div>';
-  
-  const {data, error} = await sb.from('reports')
-    .select('id, file_names, created_at, report_data')
-    .eq('user_id', currentUser.id)
-    .order('created_at', {ascending: false})
-    .limit(50);
-  
-  if(error){
-    $('storicoLista').innerHTML = '<p style="color:var(--red)">Errore nel caricamento dello storico.</p>';
-    return;
-  }
-  
-  if(!data || data.length === 0){
-    $('storicoLista').innerHTML = '<p style="text-align:center;color:var(--ink-soft);padding:30px">📭 Nessuna analisi salvata. Inizia caricando un documento!</p>';
-    return;
-  }
-  
+  const {data, error} = await sb.from('reports').select('id, file_names, created_at, report_data').eq('user_id', currentUser.id).order('created_at', {ascending: false}).limit(50);
+  if(error){ $('storicoLista').innerHTML = '<p style="color:var(--red)">Errore nel caricamento dello storico.</p>'; return; }
+  if(!data || data.length === 0){ $('storicoLista').innerHTML = '<p style="text-align:center;color:var(--ink-soft);padding:30px">📭 Nessuna analisi salvata.</p>'; return; }
   $('storicoLista').innerHTML = data.map(r => {
     const g = (r.report_data && r.report_data.giudizio) ? r.report_data.giudizio : {};
     const rischio = g.livello_rischio || '?';
     const emoji = {BASSO:'✅', MEDIO:'⚠️', ALTO:'🔴'}[rischio] || '❓';
     const dataStr = new Date(r.created_at).toLocaleString('it-IT');
-    return `
-      <div class="storico-item" style="border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:10px; display:flex; align-items:center; gap:14px; flex-wrap:wrap">
-        <div style="font-size:28px;flex-shrink:0">${emoji}</div>
-        <div style="flex:1;min-width:150px">
-          <div style="font-weight:700;font-size:14px">${esc(r.file_names || 'Analisi')}</div>
-          <div style="font-size:12px;color:var(--ink-soft)">${dataStr}</div>
-          <div style="font-size:12px;margin-top:2px">Rischio: <strong>${rischio}</strong> — ${esc(g.convenienza || '?')}</div>
-        </div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
-          <button onclick="caricaAnalisiStorico('${r.id}')" style="background:var(--blue);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700">📄 Carica</button>
-          <button onclick="eliminaAnalisiStorico('${r.id}')" style="background:var(--red-pale);color:var(--red);border:1px solid var(--red-mid);padding:8px 14px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700">🗑️</button>
-        </div>
-      </div>`;
+    return `<div class="storico-item" style="border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div style="font-size:28px;flex-shrink:0">${emoji}</div>
+      <div style="flex:1;min-width:150px"><div style="font-weight:700;font-size:14px">${esc(r.file_names||'Analisi')}</div><div style="font-size:12px;color:var(--ink-soft)">${dataStr}</div><div style="font-size:12px;margin-top:2px">Rischio: <strong>${rischio}</strong> — ${esc(g.convenienza||'?')}</div></div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button onclick="caricaAnalisiStorico('${r.id}')" style="background:var(--blue);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700">📄 Carica</button>
+        <button onclick="eliminaAnalisiStorico('${r.id}')" style="background:var(--red-pale);color:var(--red);border:1px solid var(--red-mid);padding:8px 14px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700">🗑️</button>
+      </div></div>`;
   }).join('');
 }
 
-function chiudiStorico(){
-  $('modalStoricoBack').classList.add('hidden');
-}
+function chiudiStorico(){ $('modalStoricoBack').classList.add('hidden'); }
 
 async function caricaAnalisiStorico(id){
   const {data} = await sb.from('reports').select('report_data, file_names').eq('id', id).single();
@@ -916,10 +843,10 @@ async function eliminaAnalisiStorico(id){
   if(!confirm('Eliminare questa analisi? L\'operazione è irreversibile.')) return;
   const {error} = await sb.from('reports').delete().eq('id', id).eq('user_id', currentUser.id);
   if(error){ alert('Errore: '+error.message); return; }
-  apriStorico(); // ricarica la lista
+  apriStorico();
 }
 
-// ── PANNELLO ADMIN CREDITI ──
+// ── ADMIN CREDITI ──
 function apriPannelloAdminCrediti(){
   if(!isAdmin) return;
   $('modalAdminCreditiBack').classList.remove('hidden');
@@ -928,85 +855,35 @@ function apriPannelloAdminCrediti(){
   $('adminQta').value = '10';
   $('adminNote').value = '';
 }
-
-function chiudiPannelloAdminCrediti(){
-  $('modalAdminCreditiBack').classList.add('hidden');
-}
+function chiudiPannelloAdminCrediti(){ $('modalAdminCreditiBack').classList.add('hidden'); }
 
 async function eseguiRicaricaCrediti(){
   const userId = $('adminUserId').value.trim();
   const qta = parseInt($('adminQta').value);
   const note = $('adminNote').value.trim();
-  
   if(!userId){ mostraMsgAdmin('Inserisci un ID utente valido.', 'err'); return; }
   if(!qta || qta < 1){ mostraMsgAdmin('La quantità deve essere almeno 1.', 'err'); return; }
-  
-  // Recupera crediti attuali
   const {data: credData} = await sb.from('crediti_utente').select('crediti').eq('user_id', userId).single();
   const nuovi = (credData ? credData.crediti : 0) + qta;
-  
-  const {error: upErr} = await sb.from('crediti_utente').upsert({
-    user_id: userId,
-    crediti: nuovi,
-    ultima_ricarica: new Date().toISOString()
-  }, {onConflict: 'user_id'});
-  
+  const {error: upErr} = await sb.from('crediti_utente').upsert({user_id: userId, crediti: nuovi, ultima_ricarica: new Date().toISOString()}, {onConflict: 'user_id'});
   if(upErr){ mostraMsgAdmin('Errore: ' + upErr.message, 'err'); return; }
-  
-  // Registra storico
-  await sb.from('storico_ricariche').insert({
-    admin_id: currentUser.id,
-    user_id: userId,
-    quantita: qta,
-    note: note || 'Ricarica manuale'
-  });
-  
-  // Aggiorna credito totale acquistato
+  await sb.from('storico_ricariche').insert({admin_id: currentUser.id, user_id: userId, quantita: qta, note: note || 'Ricarica manuale'});
   const {data: currData} = await sb.from('crediti_utente').select('crediti_totali_acquistati').eq('user_id', userId).single();
-  await sb.from('crediti_utente').update({
-    crediti_totali_acquistati: (currData?.crediti_totali_acquistati || 0) + qta
-  }).eq('user_id', userId);
-  
+  await sb.from('crediti_utente').update({crediti_totali_acquistati: (currData?.crediti_totali_acquistati || 0) + qta}).eq('user_id', userId);
   mostraMsgAdmin(`✅ ${qta} crediti aggiunti all'utente ${userId}. Nuovo saldo: ${nuovi}`, 'ok');
 }
+function mostraMsgAdmin(msg, tipo){ $('adminMsgCrediti').innerHTML = `<div class="m-msg ${tipo}">${esc(msg)}</div>`; }
 
-function mostraMsgAdmin(msg, tipo){
-  $('adminMsgCrediti').innerHTML = `<div class="m-msg ${tipo}">${esc(msg)}</div>`;
-}
-
-function topCtaClick(e){
-  if(!currentUser){e.preventDefault();openAuthModal('login');return false;}
-  return true;
-}
-
-function openAuthModal(tab){
-  $('authModalBack').classList.remove('hidden');
-  clearAuthMsg();
-  if(tab==='register')switchAuthTab('register');else switchAuthTab('login');
-}
+// ── AUTH UI ──
+function topCtaClick(e){ if(!currentUser){e.preventDefault();openAuthModal('login');return false;} return true; }
+function openAuthModal(tab){ $('authModalBack').classList.remove('hidden'); clearAuthMsg(); if(tab==='register')switchAuthTab('register');else switchAuthTab('login'); }
 function closeAuthModal(){$('authModalBack').classList.add('hidden');clearAuthMsg();}
-
 function switchAuthTab(tab){
-  $('viewAuth').classList.remove('hidden');
-  $('viewVerifySignup').classList.add('hidden');
-  $('viewForgot').classList.add('hidden');
-  $('viewForgotSent').classList.add('hidden');
-  $('viewReset').classList.add('hidden');
-  clearAuthMsg();
-  if(tab==='login'){
-    $('formLogin').classList.remove('hidden');$('formRegister').classList.add('hidden');
-    $('tabLogin').classList.add('active');$('tabRegister').classList.remove('active');
-    $('viewAuth').querySelector('.m-tabs').classList.remove('hidden');
-  }else if(tab==='register'){
-    $('formLogin').classList.add('hidden');$('formRegister').classList.remove('hidden');
-    $('tabRegister').classList.add('active');$('tabLogin').classList.remove('active');
-    $('viewAuth').querySelector('.m-tabs').classList.remove('hidden');
-  }else if(tab==='forgot'){
-    $('viewAuth').classList.add('hidden');
-    $('viewForgot').classList.remove('hidden');
-  }
+  $('viewAuth').classList.remove('hidden');$('viewVerifySignup').classList.add('hidden');$('viewForgot').classList.add('hidden');$('viewForgotSent').classList.add('hidden');$('viewReset').classList.add('hidden');clearAuthMsg();
+  if(tab==='login'){ $('formLogin').classList.remove('hidden');$('formRegister').classList.add('hidden');$('tabLogin').classList.add('active');$('tabRegister').classList.remove('active');$('viewAuth').querySelector('.m-tabs').classList.remove('hidden'); }
+  else if(tab==='register'){ $('formLogin').classList.add('hidden');$('formRegister').classList.remove('hidden');$('tabRegister').classList.add('active');$('tabLogin').classList.remove('active');$('viewAuth').querySelector('.m-tabs').classList.remove('hidden'); }
+  else if(tab==='forgot'){ $('viewAuth').classList.add('hidden');$('viewForgot').classList.remove('hidden'); }
 }
-
 function showAuthMsg(msg,type){$('authMsg').innerHTML=`<div class="m-msg ${type}">${esc(msg)}</div>`;}
 function clearAuthMsg(){$('authMsg').innerHTML='';}
 
@@ -1018,19 +895,14 @@ async function handleRegister(e){
   $('regBtn').disabled=false;$('regBtn').textContent='Crea account';
   if(error){showAuthMsg(error.message,'err');return false;}
   pendingSignupEmail=email;
-  $('viewAuth').classList.add('hidden');
-  $('viewVerifySignup').classList.remove('hidden');
-  $('verifySignupEmail').textContent=email;
-  clearAuthMsg();
+  $('viewAuth').classList.add('hidden');$('viewVerifySignup').classList.remove('hidden');$('verifySignupEmail').textContent=email;clearAuthMsg();
   return false;
 }
-
 async function resendSignupCode(){
   if(!pendingSignupEmail)return;
   const{error}=await sb.auth.resend({type:'signup',email:pendingSignupEmail});
   showAuthMsg(error?error.message:'Email inviata di nuovo.',error?'err':'ok');
 }
-
 async function handleLogin(e){
   e.preventDefault();
   const email=$('loginEmail').value.trim(),password=$('loginPassword').value;
@@ -1038,12 +910,9 @@ async function handleLogin(e){
   const{data,error}=await sb.auth.signInWithPassword({email,password});
   $('loginBtn').disabled=false;$('loginBtn').textContent='Accedi';
   if(error){showAuthMsg(error.message,'err');return false;}
-  closeAuthModal();
-  return false;
+  closeAuthModal();return false;
 }
-
 async function authLogout(){await sb.auth.signOut();}
-
 function requestAccountDeletion(){
   if(!currentUser)return;
   const subject=encodeURIComponent('Richiesta cancellazione account REPORT');
@@ -1051,12 +920,10 @@ function requestAccountDeletion(){
   window.location.href='mailto:hobbyimprenditore@gmail.com?subject='+subject+'&body='+body;
 }
 
-// ── ADMIN: elenco iscritti + report generati (visibile solo al proprietario, protetto lato server da RLS) ──
+// ── ADMIN PANEL ──
 async function openAdminPanel(){
   if(!isAdmin)return;
-  $('adminModalBack').classList.remove('hidden');
-  $('adminTableWrap').innerHTML='';
-  $('adminCount').textContent='Caricamento…';
+  $('adminModalBack').classList.remove('hidden');$('adminTableWrap').innerHTML='';$('adminCount').textContent='Caricamento…';
   const[{data:users,error:uErr},{data:reports,error:rErr}]=await Promise.all([
     sb.from('profiles').select('id,email,phone,city,created_at,is_blocked').order('created_at',{ascending:false}),
     sb.from('reports').select('user_id,file_names,created_at').order('created_at',{ascending:false})
@@ -1071,59 +938,39 @@ async function openAdminPanel(){
     return `<tr><td>${esc(u.email||'')}</td><td>${esc(u.phone||'—')}</td><td>${esc(u.city||'—')}</td><td>${new Date(u.created_at).toLocaleDateString('it-IT')}</td><td>${u.is_blocked?'Sospeso':'Attivo'}</td><td>${repList}</td></tr>`;
   }).join('');
   const tableHtml=`<table><thead><tr><th>Email</th><th>Cellulare</th><th>Città</th><th>Registrato il</th><th>Stato</th><th>Report generati</th></tr></thead><tbody>${rows}</tbody></table>`;
-  $('adminTableWrap').innerHTML=tableHtml;
-  window._adminTableHtml=tableHtml;
-  window._adminCount=users.length;
+  $('adminTableWrap').innerHTML=tableHtml;window._adminTableHtml=tableHtml;window._adminCount=users.length;
 }
 function closeAdminPanel(){$('adminModalBack').classList.add('hidden');}
-
 function printAdminReport(){
   if(!window._adminTableHtml)return;
   $('adminPrintArea').innerHTML=`<h2 style="margin-bottom:6px">Report iscritti — REPORT Aste Immobiliari</h2><p style="margin-bottom:16px;color:#666">Generato il ${new Date().toLocaleString('it-IT')} — ${window._adminCount} utenti</p>${window._adminTableHtml}`;
-  document.body.classList.add('admin-printing');
-  window.print();
+  document.body.classList.add('admin-printing');window.print();
   const cleanup=()=>{document.body.classList.remove('admin-printing');window.removeEventListener('afterprint',cleanup);};
   window.addEventListener('afterprint',cleanup);
 }
-
 async function handleForgot(e){
-  e.preventDefault();
-  const email=$('forgotEmail').value.trim();
-  $('forgotBtn').disabled=true;
+  e.preventDefault();const email=$('forgotEmail').value.trim();$('forgotBtn').disabled=true;
   const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
   $('forgotBtn').disabled=false;
   if(error){showAuthMsg(error.message,'err');return false;}
-  $('viewForgot').classList.add('hidden');
-  $('viewForgotSent').classList.remove('hidden');
-  clearAuthMsg();
-  return false;
+  $('viewForgot').classList.add('hidden');$('viewForgotSent').classList.remove('hidden');clearAuthMsg();return false;
 }
-
 async function handleReset(e){
-  e.preventDefault();
-  const newPassword=$('resetPassword').value;
-  $('resetBtn').disabled=true;
+  e.preventDefault();const newPassword=$('resetPassword').value;$('resetBtn').disabled=true;
   const{error:updErr}=await sb.auth.updateUser({password:newPassword});
   $('resetBtn').disabled=false;
   if(updErr){showAuthMsg(updErr.message,'err');return false;}
-  showAuthMsg('Password aggiornata! Ora sei loggato.','ok');
-  setTimeout(closeAuthModal,1200);
-  return false;
+  showAuthMsg('Password aggiornata! Ora sei loggato.','ok');setTimeout(closeAuthModal,1200);return false;
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  setupDrop();
-  $('fileInput').addEventListener('change',e=>addFiles(Array.from(e.target.files)));
-  initAuth();
-});
-
+// ── UPLOAD & ANALYSIS ──
+document.addEventListener('DOMContentLoaded',()=>{ setupDrop();$('fileInput').addEventListener('change',e=>addFiles(Array.from(e.target.files))); initAuth(); });
 function setupDrop(){
   const z=$('uploadZone');
   z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag-over');});
   z.addEventListener('dragleave',()=>z.classList.remove('drag-over'));
   z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag-over');addFiles(Array.from(e.dataTransfer.files));});
 }
-
 function addFiles(files){
   const ok=['pdf','txt','doc','docx','png','jpg','jpeg'];
   for(const f of files){
@@ -1134,53 +981,30 @@ function addFiles(files){
   }
   renderList();updateBtn();
 }
-
 function removeFile(id){S.files=S.files.filter(f=>f.id!==id);renderList();updateBtn();}
-
 function clearAll(){
   S.files=[];S.results=[];S.unified=null;
-  renderList();updateBtn();
-  $('fileInput').value='';
-  $('block-progress').classList.add('hidden');
-  $('block-results').classList.add('hidden');
-  $('analyzeWrap').classList.add('hidden');
+  renderList();updateBtn();$('fileInput').value='';$('block-progress').classList.add('hidden');$('block-results').classList.add('hidden');$('analyzeWrap').classList.add('hidden');
   window.scrollTo({top:$('inizia').offsetTop-80,behavior:'smooth'});
 }
-
 function renderList(){
   const list=$('fileList'),wrap=$('analyzeWrap');
   if(!S.files.length){list.classList.add('hidden');list.innerHTML='';wrap.classList.add('hidden');return;}
   list.classList.remove('hidden');wrap.classList.remove('hidden');
-  list.innerHTML=S.files.map(f=>`
-    <div class="file-item" id="fi_${f.id}">
-      <div class="f-ico">${ico(f.type)}</div>
-      <div class="f-meta">
-        <div class="f-name">${esc(f.name)}</div>
-        <div class="f-size">${fmtSz(f.size)}</div>
-      </div>
-      <span class="f-badge ${f.status}" id="fb_${f.id}" title="${f.errMsg?esc(f.errMsg):''}">${blabel(f.status)}</span>
-      <button class="f-del" onclick="removeFile('${f.id}')">✕</button>
-    </div>`).join('');
+  list.innerHTML=S.files.map(f=>`<div class="file-item" id="fi_${f.id}"><div class="f-ico">${ico(f.type)}</div><div class="f-meta"><div class="f-name">${esc(f.name)}</div><div class="f-size">${fmtSz(f.size)}</div></div><span class="f-badge ${f.status}" id="fb_${f.id}" title="${f.errMsg?esc(f.errMsg):''}">${blabel(f.status)}</span><button class="f-del" onclick="removeFile('${f.id}')">✕</button></div>`).join('');
 }
-
-function setStat(id,s){
-  const f=S.files.find(f=>f.id===id);if(f)f.status=s;
-  const el=$('fb_'+id);if(el){el.className='f-badge '+s;el.textContent=blabel(s);el.title=(f&&f.errMsg)?f.errMsg:'';}
-}
+function setStat(id,s){const f=S.files.find(f=>f.id===id);if(f)f.status=s;const el=$('fb_'+id);if(el){el.className='f-badge '+s;el.textContent=blabel(s);el.title=(f&&f.errMsg)?f.errMsg:'';}}
 function ico(e){return{pdf:'📕',txt:'📄',doc:'📝',docx:'📝',png:'🖼️',jpg:'🖼️',jpeg:'🖼️'}[e]||'📄';}
 function blabel(s){return{pending:'In attesa',processing:'Analisi…',done:'✓ OK',error:'✕ Errore'}[s]||s;}
 function fmtSz(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
 function updateBtn(){$('analyzeBtn').disabled=!S.files.length;}
 
-// ── ANALYSIS ──
+// ── ANALISI (CORRETTA) ──
 async function startAnalysis(){
   if(!currentUser){openAuthModal('login');return;}
   if(!S.files.length){alert('Carica almeno un documento.');return;}
-  async function startAnalysis(){
-  if(!currentUser){openAuthModal('login');return;}
-  if(!S.files.length){alert('Carica almeno un documento.');return;}
 
-  // ── CONTROLLO CREDITI (INSERIRE QUI) ──
+  // Controllo crediti
   if(creditiDisponibili < COSTO_ANALISI){
     if(!confirm('Hai esaurito i crediti gratuiti! 💰\n\nVuoi contattare il proprietario per richiedere una ricarica?\n\n(WhatsApp / Instagram / Email)')) return;
     window.open('https://wa.me/393204877661?text=Ciao!%20Vorrei%20richiedere%20crediti%20per%20la%20piattaforma%20REPORT', '_blank');
@@ -1188,11 +1012,7 @@ async function startAnalysis(){
   }
   const ok = await consumaCredito();
   if(!ok){ alert('Errore nel consumo del credito. Riprova.'); return; }
-  // ── FINE CONTROLLO CREDITI ──
 
-  $('block-progress').classList.remove('hidden');
-  $('block-results').classList.add('hidden');
-  $('analyzeBtn').disabled=true;
   $('block-progress').classList.remove('hidden');
   $('block-results').classList.add('hidden');
   $('analyzeBtn').disabled=true;
@@ -1249,18 +1069,11 @@ async function startAnalysis(){
   $('analyzeBtn').disabled=false;
 }
 
-// Salva il report generato collegato all'utente, per la consultazione nel pannello proprietario
 async function saveReportToSupabase(){
   if(!currentUser || !S.unified) return;
   try {
-    await sb.from('reports').insert({
-      user_id: currentUser.id,
-      file_names: S.files.map(f => f.name).join(', '),
-      report_data: S.unified
-    });
-  } catch(e){
-    console.error('Salvataggio report fallito:', e);
-  }
+    await sb.from('reports').insert({user_id: currentUser.id, file_names: S.files.map(f => f.name).join(', '), report_data: S.unified});
+  } catch(e){ console.error('Salvataggio report fallito:', e); }
 }
 
 function readFile(f){
@@ -1273,31 +1086,21 @@ function readFile(f){
         try{
           if(!window.pdfjsLib)throw new Error('PDF.js non caricato');
           const pdf=await pdfjsLib.getDocument({data:e.target.result}).promise;
-          let full='';
-          const maxPages=Math.min(pdf.numPages,60); // limite di sicurezza per PDF molto lunghi
-          for(let p=1;p<=maxPages;p++){
-            const page=await pdf.getPage(p);
-            const content=await page.getTextContent();
-            full+=content.items.map(it=>it.str).join(' ')+'\n';
-          }
+          let full='';const maxPages=Math.min(pdf.numPages,60);
+          for(let p=1;p<=maxPages;p++){const page=await pdf.getPage(p);const content=await page.getTextContent();full+=content.items.map(it=>it.str).join(' ')+'\n';}
           full=full.replace(/\s{3,}/g,' ').trim();
           if(full.length>80){res(full);}
           else{
-            // Nessun testo estraibile: probabile PDF scansionato (immagine). Convertiamo la prima pagina in immagine per l'analisi visiva.
-            const page=await pdf.getPage(1);
-            const viewport=page.getViewport({scale:1.5});
-            const canvas=document.createElement('canvas');
-            canvas.width=viewport.width;canvas.height=viewport.height;
+            const page=await pdf.getPage(1);const viewport=page.getViewport({scale:1.5});
+            const canvas=document.createElement('canvas');canvas.width=viewport.width;canvas.height=viewport.height;
             await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
             res('[IMG:'+canvas.toDataURL('image/jpeg',0.85)+']');
           }
         }catch(err){rej(new Error('lettura PDF fallita: '+err.message));}
       };
-      r.onerror=()=>rej(new Error('lettura binaria fallita'));
-      r.readAsArrayBuffer(f.file);
+      r.onerror=()=>rej(new Error('lettura binaria fallita'));r.readAsArrayBuffer(f.file);
     }
     else{
-      // doc/docx: nessun parser dedicato, fallback a lettura testuale grezza
       r.onload=e=>{
         const a=new Uint8Array(e.target.result);let t='';
         for(let i=0;i<a.length;i++){const c=a[i];if((c>=32&&c<=126)||c===10||c===13)t+=String.fromCharCode(c);}
@@ -1305,21 +1108,15 @@ function readFile(f){
         const cl=lines.join('\n').replace(/\s{3,}/g,' ').trim();
         res(cl.length>80?cl:'[Testo limitato. Per risultati migliori usa file .txt o .pdf]');
       };
-      r.onerror=()=>rej(new Error('lettura binaria fallita'));
-      r.readAsArrayBuffer(f.file);
+      r.onerror=()=>rej(new Error('lettura binaria fallita'));r.readAsArrayBuffer(f.file);
     }
   });
 }
 
 async function claude(messages,system){
-  const resp=await fetch(WORKER_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4096,system,messages})
-  });
+  const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4096,system,messages})});
   if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+resp.status);}
-  const d=await resp.json();
-  return d.content?.map(b=>b.text||'').join('')||'';
+  const d=await resp.json();return d.content?.map(b=>b.text||'').join('')||'';
 }
 
 const SYS=`Sei un avvocato esperto in diritto immobiliare ed esecuzioni forzate con 20 anni di esperienza in Italia. Analizza l'avviso di vendita e restituisci SOLO un JSON valido (null per dati mancanti):
@@ -1330,22 +1127,15 @@ async function analyze(text,name){
   const isImg=text.startsWith('[IMG:');
   let content;
   if(isImg){
-    const b64=text.replace('[IMG:','').replace(']','');
-    const[meta,data]=b64.split(',');
-    const mt=meta.match(/data:([^;]+)/)?.[1]||'image/jpeg';
+    const b64=text.replace('[IMG:','').replace(']','');const[meta,data]=b64.split(',');const mt=meta.match(/data:([^;]+)/)?.[1]||'image/jpeg';
     content=[{type:'image',source:{type:'base64',media_type:mt,data}},{type:'text',text:'Analizza questo avviso (file: '+name+').'}];
-  }else{
-    content='Analizza il seguente avviso (file: '+name+'):\n\n'+text.slice(0,15000);
-  }
+  }else{content='Analizza il seguente avviso (file: '+name+'):\n\n'+text.slice(0,15000);}
   const raw=await claude([{role:'user',content}],SYS);
-  try{return JSON.parse(raw.replace(/```json|```/g,'').trim());}
-  catch(e){throw new Error('JSON non valido: '+e.message);}
+  try{return JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){throw new Error('JSON non valido: '+e.message);}
 }
 
 async function merge(results){
-  const prompt='Hai analizzato '+results.length+' documenti della stessa procedura.\n\n'+
-    results.map((r,i)=>'--- Doc '+(i+1)+': '+r.name+' ---\n'+JSON.stringify(r.data,null,2)).join('\n\n')+
-    '\n\nCrea un JSON unificato con la stessa struttura, compensando i dati mancanti da un file con quelli degli altri. Aggrega rischi e opportunità. Aggiorna la sintesi. SOLO JSON valido.';
+  const prompt='Hai analizzato '+results.length+' documenti della stessa procedura.\n\n'+results.map((r,i)=>'--- Doc '+(i+1)+': '+r.name+' ---\n'+JSON.stringify(r.data,null,2)).join('\n\n')+'\n\nCrea un JSON unificato con la stessa struttura, compensando i dati mancanti da un file con quelli degli altri. Aggrega rischi e opportunità. Aggiorna la sintesi. SOLO JSON valido.';
   try{
     const raw=await claude([{role:'user',content:prompt}],'Sei un avvocato esperto. Restituisci SOLO JSON valido con la stessa struttura.');
     return JSON.parse(raw.replace(/```json|```/g,'').trim());
@@ -1353,8 +1143,7 @@ async function merge(results){
 }
 
 function localMerge(objs){
-  const r={};
-  const keys=[...new Set(objs.flatMap(o=>Object.keys(o||{})))];
+  const r={};const keys=[...new Set(objs.flatMap(o=>Object.keys(o||{})))];
   for(const k of keys){
     const vals=objs.map(o=>o?.[k]);
     if(vals.some(v=>v!==null&&!Array.isArray(v)&&typeof v==='object'))r[k]=localMerge(vals.filter(v=>v!==null&&typeof v==='object'&&!Array.isArray(v)));
@@ -1366,122 +1155,37 @@ function localMerge(objs){
 
 // ── RENDER ──
 function render(d){
-  renderVerdict(d);
-  $('tp-panoramica').innerHTML=buildPano(d);
-  $('tp-legale').innerHTML=buildLegal(d);
-  $('tp-economica').innerHTML=buildEco(d);
-  $('tp-rischi').innerHTML=buildRisk(d);
-  $('tp-tabella').innerHTML=buildTbl(d);
+  renderVerdict(d);$('tp-panoramica').innerHTML=buildPano(d);$('tp-legale').innerHTML=buildLegal(d);
+  $('tp-economica').innerHTML=buildEco(d);$('tp-rischi').innerHTML=buildRisk(d);$('tp-tabella').innerHTML=buildTbl(d);
   switchTab('panoramica',document.querySelector('.tab'));
 }
-
 function renderVerdict(d){
-  const g=d.giudizio||{};
-  const risk=g.livello_rischio||'MEDIO';
-  const cls={BASSO:'low',MEDIO:'mid',ALTO:'high'}[risk]||'mid';
-  const ico2={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[risk]||'⚠️';
-  const el=$('verdictEl');
-  el.className='verdict '+cls;
-  el.innerHTML=`<div class="v-ico">${ico2}</div><div><div class="v-ey">Giudizio finale</div><div class="v-title">Rischio ${risk} — Convenienza ${g.convenienza||'N/D'}</div><div class="v-desc">${esc(g.sintesi||'Analisi completata.')}</div></div>`;
-  el.classList.remove('hidden');
+  const g=d.giudizio||{};const risk=g.livello_rischio||'MEDIO';const cls={BASSO:'low',MEDIO:'mid',ALTO:'high'}[risk]||'mid';
+  const ico2={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[risk]||'⚠️';const el=$('verdictEl');
+  el.className='verdict '+cls;el.innerHTML=`<div class="v-ico">${ico2}</div><div><div class="v-ey">Giudizio finale</div><div class="v-title">Rischio ${risk} — Convenienza ${g.convenienza||'N/D'}</div><div class="v-desc">${esc(g.sintesi||'Analisi completata.')}</div></div>`;el.classList.remove('hidden');
 }
-
-function icard(label,val,big,gn,full){
-  const cls=val?(big?'if-val big':gn?'if-val gn':'if-val'):'if-val nd';
-  return`<div class="info-field${full?' if-full':''}"><div class="if-lbl">${esc(label)}</div><div class="${cls}">${val?esc(String(val)):'N/D'}</div></div>`;
-}
-
+function icard(label,val,big,gn,full){const cls=val?(big?'if-val big':gn?'if-val gn':'if-val'):'if-val nd';return`<div class="info-field${full?' if-full':''}"><div class="if-lbl">${esc(label)}</div><div class="${cls}">${val?esc(String(val)):'N/D'}</div></div>`;}
 function al(type,icon,text){return`<div class="alert ${type}"><span class="al-ico">${icon}</span><div class="al-txt">${esc(text)}</div></div>`;}
-
 function buildPano(d){
   const p=d.procedura||{},im=d.immobile||{},ec=d.economico||{},g=d.giudizio||{};
-  const rc={BASSO:'opp',MEDIO:'info',ALTO:'risk'}[g.livello_rischio]||'info';
-  const ri={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️';
-  return`<div class="prose">
-    <h3>📋 Procedura</h3>
-    <div class="icard icard-grid">
-      ${icard('Tipo procedura',p.tipo)}${icard('Tribunale',p.tribunale)}
-      ${icard('Numero RGE',p.rge)}${icard('Giudice',p.giudice)}
-      ${icard('Professionista delegato',p.delegato,false,false,true)}
-      ${icard('Data pubblicazione',p.data_pubblicazione)}
-    </div>
-    <h3>🏠 Immobile</h3>
-    <div class="icard icard-grid">
-      ${icard('Tipologia',im.tipologia)}${icard('Superficie',im.superficie_catastale)}
-      ${icard('Indirizzo',im.ubicazione,false,false,true)}
-      ${icard('Categoria catastale',im.categoria_catastale)}${icard('Rendita',im.rendita_catastale)}
-    </div>
-    ${im.descrizione?al('info','📝',im.descrizione):''}
-    <h3>💰 Prezzi</h3>
-    <div class="icard icard-grid">
-      ${icard('Valore di stima',ec.valore_stima,true)}${icard('Prezzo base asta',ec.prezzo_base_prima_asta,true)}
-      ${icard('Sconto sul valore',ec.sconto_percentuale,false,true)}${icard('Cauzione',ec.cauzione)}
-    </div>
-    <h3>⚖️ Valutazione sintetica</h3>
-    ${al(rc,ri,'<strong>Rischio '+g.livello_rischio+' — Convenienza '+(g.convenienza||'?')+'</strong><br/>'+esc(g.sintesi||'')+'<br/><br/><strong>Raccomandazione:</strong> '+esc(g.raccomandazione||''))}
-  </div>`;
+  const rc={BASSO:'opp',MEDIO:'info',ALTO:'risk'}[g.livello_rischio]||'info';const ri={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️';
+  return`<div class="prose"><h3>📋 Procedura</h3><div class="icard icard-grid">${icard('Tipo procedura',p.tipo)}${icard('Tribunale',p.tribunale)}${icard('Numero RGE',p.rge)}${icard('Giudice',p.giudice)}${icard('Professionista delegato',p.delegato,false,false,true)}${icard('Data pubblicazione',p.data_pubblicazione)}</div><h3>🏠 Immobile</h3><div class="icard icard-grid">${icard('Tipologia',im.tipologia)}${icard('Superficie',im.superficie_catastale)}${icard('Indirizzo',im.ubicazione,false,false,true)}${icard('Categoria catastale',im.categoria_catastale)}${icard('Rendita',im.rendita_catastale)}</div>${im.descrizione?al('info','📝',im.descrizione):''}<h3>💰 Prezzi</h3><div class="icard icard-grid">${icard('Valore di stima',ec.valore_stima,true)}${icard('Prezzo base asta',ec.prezzo_base_prima_asta,true)}${icard('Sconto sul valore',ec.sconto_percentuale,false,true)}${icard('Cauzione',ec.cauzione)}</div><h3>⚖️ Valutazione sintetica</h3>${al(rc,ri,'<strong>Rischio '+g.livello_rischio+' — Convenienza '+(g.convenienza||'?')+'</strong><br/>'+esc(g.sintesi||'')+'<br/><br/><strong>Raccomandazione:</strong> '+esc(g.raccomandazione||''))}</div>`;
 }
-
 function buildLegal(d){
   const al2=d.analisi_legale||{},mo=d.modalita_vendita||{},vin=d.vincoli||{};
-  return`<div class="prose">
-    <h3>📜 Verifica Art. 490 c.p.c.</h3>
-    ${al('info','⚖️',al2.completezza_490cpc||'Verifica non disponibile.')}
-    <div class="icard"><div class="if-lbl">Conformità normativa</div><div class="if-val">${esc(al2.conformita_normativa||'N/D')}</div></div>
-    <h3>📅 Modalità di vendita</h3>
-    <div class="icard icard-grid">
-      ${icard('Data prima asta',mo.data_prima_asta)}${icard('Data seconda asta',mo.data_seconda_asta)}
-      ${icard('Termine offerte',mo.termine_offerte,false,false,true)}
-      ${icard('Modalità offerta',mo.modalita_offerta,false,false,true)}
-      ${icard('Modalità pagamento',mo.modalita_pagamento,false,false,true)}
-    </div>
-    <h3>🏗️ Vincoli e oneri</h3>
-    <div class="icard icard-grid">
-      ${icard('Ipoteche',vin.ipoteche,false,false,true)}
-      ${icard('Trascrizioni',vin.trascrizioni,false,false,true)}
-      ${icard('Altri gravami',vin.altri_gravami,false,false,true)}
-      ${icard('Occupanti',vin.occupanti,false,false,true)}
-      ${icard('Situazione giuridica',vin.situazione_giuridica_occupanti,false,false,true)}
-    </div>
-    ${al2.criticita?.length?'<h3>🚨 Criticità</h3>'+al2.criticita.map(c=>al('risk','⚠️',c)).join(''):''}
-    ${al2.elementi_attenzione?.length?'<h3>👁️ Elementi di attenzione</h3>'+al2.elementi_attenzione.map(e=>al('warn','👉',e)).join(''):''}
-  </div>`;
+  return`<div class="prose"><h3>📜 Verifica Art. 490 c.p.c.</h3>${al('info','⚖️',al2.completezza_490cpc||'Verifica non disponibile.')}<div class="icard"><div class="if-lbl">Conformità normativa</div><div class="if-val">${esc(al2.conformita_normativa||'N/D')}</div></div><h3>📅 Modalità di vendita</h3><div class="icard icard-grid">${icard('Data prima asta',mo.data_prima_asta)}${icard('Data seconda asta',mo.data_seconda_asta)}${icard('Termine offerte',mo.termine_offerte,false,false,true)}${icard('Modalità offerta',mo.modalita_offerta,false,false,true)}${icard('Modalità pagamento',mo.modalita_pagamento,false,false,true)}</div><h3>🏗️ Vincoli e oneri</h3><div class="icard icard-grid">${icard('Ipoteche',vin.ipoteche,false,false,true)}${icard('Trascrizioni',vin.trascrizioni,false,false,true)}${icard('Altri gravami',vin.altri_gravami,false,false,true)}${icard('Occupanti',vin.occupanti,false,false,true)}${icard('Situazione giuridica',vin.situazione_giuridica_occupanti,false,false,true)}</div>${al2.criticita?.length?'<h3>🚨 Criticità</h3>'+al2.criticita.map(c=>al('risk','⚠️',c)).join(''):''}${al2.elementi_attenzione?.length?'<h3>👁️ Elementi di attenzione</h3>'+al2.elementi_attenzione.map(e=>al('warn','👉',e)).join(''):''}</div>`;
 }
-
 function buildEco(d){
   const ec=d.economico||{};
-  return`<div class="prose">
-    <h3>💰 Prezzi e offerte</h3>
-    <div class="icard icard-grid">
-      ${icard('Valore di stima',ec.valore_stima,true)}${icard('Prezzo base prima asta',ec.prezzo_base_prima_asta,true)}
-      ${icard('Prezzo base seconda asta',ec.prezzo_base_seconda_asta)}${icard('Offerta minima',ec.offerta_minima)}
-      ${icard('Sconto sulla stima',ec.sconto_percentuale,false,true)}${icard('Rilanci minimi',ec.rilanci_minimi)}
-      ${icard('Cauzione da versare',ec.cauzione,false,false,true)}
-    </div>
-    <h3>📈 Analisi del valore</h3>
-    ${al('info','🔍',d.valutazione_economica||'Analisi non disponibile.')}
-    <h3>🧾 Spese aggiuntive stimate</h3>
-    ${al('warn','💡',d.spese_stimate||'Considera: imposte di registro o IVA, onorari notarili, eventuali spese per sgombero occupanti, costi di ristrutturazione.')}
-  </div>`;
+  return`<div class="prose"><h3>💰 Prezzi e offerte</h3><div class="icard icard-grid">${icard('Valore di stima',ec.valore_stima,true)}${icard('Prezzo base prima asta',ec.prezzo_base_prima_asta,true)}${icard('Prezzo base seconda asta',ec.prezzo_base_seconda_asta)}${icard('Offerta minima',ec.offerta_minima)}${icard('Sconto sulla stima',ec.sconto_percentuale,false,true)}${icard('Rilanci minimi',ec.rilanci_minimi)}${icard('Cauzione da versare',ec.cauzione,false,false,true)}</div><h3>📈 Analisi del valore</h3>${al('info','🔍',d.valutazione_economica||'Analisi non disponibile.')}<h3>🧾 Spese aggiuntive stimate</h3>${al('warn','💡',d.spese_stimate||'Considera: imposte di registro o IVA, onorari notarili, eventuali spese per sgombero occupanti, costi di ristrutturazione.')}</div>`;
 }
-
 function buildRisk(d){
   const r=d.rischi||[],o=d.opportunita||[],g=d.giudizio||{};
-  const rc={BASSO:'opp',MEDIO:'info',ALTO:'risk'}[g.livello_rischio]||'info';
-  const ri={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️';
-  return`<div class="prose">
-    <h3>🔴 Rischi da considerare</h3>
-    ${r.length?r.map(x=>al('risk','⚠️',x)).join(''):al('opp','✅','Nessun rischio significativo identificato.')}
-    <h3>🟢 Opportunità</h3>
-    ${o.length?o.map(x=>al('opp','💚',x)).join(''):'<p>Nessuna opportunità specifica identificata.</p>'}
-    <h3>⚖️ Raccomandazione finale</h3>
-    ${al(rc,ri,g.raccomandazione||'Consulta sempre un avvocato abilitato prima di procedere.')}
-  </div>`;
+  const rc={BASSO:'opp',MEDIO:'info',ALTO:'risk'}[g.livello_rischio]||'info';const ri={BASSO:'✅',MEDIO:'⚠️',ALTO:'🔴'}[g.livello_rischio]||'ℹ️';
+  return`<div class="prose"><h3>🔴 Rischi da considerare</h3>${r.length?r.map(x=>al('risk','⚠️',x)).join(''):al('opp','✅','Nessun rischio significativo identificato.')}<h3>🟢 Opportunità</h3>${o.length?o.map(x=>al('opp','💚',x)).join(''):'<p>Nessuna opportunità specifica identificata.</p>'}<h3>⚖️ Raccomandazione finale</h3>${al(rc,ri,g.raccomandazione||'Consulta sempre un avvocato abilitato prima di procedere.')}</div>`;
 }
-
 function buildTbl(d){
-  const p=d.procedura||{},im=d.immobile||{},ec=d.economico||{};
-  const vin=d.vincoli||{},mo=d.modalita_vendita||{},al3=d.analisi_legale||{},g=d.giudizio||{};
+  const p=d.procedura||{},im=d.immobile||{},ec=d.economico||{},vin=d.vincoli||{},mo=d.modalita_vendita||{},al3=d.analisi_legale||{},g=d.giudizio||{};
   const secs=[
     {cat:'Dati Procedura',rows:[['Tipo procedura',p.tipo],['Tribunale',p.tribunale],['Numero RGE',p.rge],["Giudice dell'esecuzione",p.giudice],['Professionista delegato',p.delegato],['Data pubblicazione',p.data_pubblicazione]]},
     {cat:'Immobile',rows:[['Tipologia',im.tipologia],['Ubicazione',im.ubicazione],['Superficie catastale',im.superficie_catastale],['Foglio/Particella/Sub.',[im.foglio,im.particella,im.subalterno].filter(Boolean).join(' / ')||null],['Categoria catastale',im.categoria_catastale],['Rendita catastale',im.rendita_catastale]]},
@@ -1494,15 +1198,13 @@ function buildTbl(d){
   let rows='';
   for(const s of secs){
     for(let i=0;i<s.rows.length;i++){
-      const[k,v2]=s.rows[i];
-      const isRisk=s.cat==='Giudizio'&&k==='Livello di rischio';
+      const[k,v2]=s.rows[i];const isRisk=s.cat==='Giudizio'&&k==='Livello di rischio';
       const valCls=v2?(isRisk?(v2==='ALTO'?'dt-risk':v2==='BASSO'?'dt-good':'dt-val'):'dt-val'):'dt-nd';
       rows+=`<tr>${i===0?`<td class="dt-cat" rowspan="${s.rows.length}">${esc(s.cat)}</td>`:''}<td class="dt-key">${esc(k)}</td><td class="${valCls}">${v2?esc(String(v2)):'N/D — dato non presente'}</td></tr>`;
     }
   }
   return`<div class="tbl-wrap"><table class="dtbl"><thead><tr><th style="width:130px">Categoria</th><th style="width:190px">Dato</th><th>Valore / Dettaglio</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
-
 function switchTab(name,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
@@ -1541,76 +1243,19 @@ ${(d.analisi_legale?.criticita||[]).map(c=>`<div class="a risk"><span>⚠️</sp
 </body></html>`;
   dl('report_asta.html',html,'text/html');
 }
-
 function exportTxt(){
   if(!S.unified)return;
-  const d=S.unified,p=d.procedura||{},im=d.immobile||{},ec=d.economico||{};
-  const vin=d.vincoli||{},mo=d.modalita_vendita||{},g=d.giudizio||{},al4=d.analisi_legale||{};
+  const d=S.unified,p=d.procedura||{},im=d.immobile||{},ec=d.economico||{},vin=d.vincoli||{},mo=d.modalita_vendita||{},g=d.giudizio||{},al4=d.analisi_legale||{};
   const n=v=>v||'N/D';
-  const txt=`══════════════════════════════════════════════════
-  REPORT — Analisi Avviso di Vendita Immobiliare
-  Data: ${new Date().toLocaleString('it-IT')}
-  Documenti: ${S.results.length}
-══════════════════════════════════════════════════
-
-GIUDIZIO:     Rischio ${n(g.livello_rischio)} — Convenienza ${n(g.convenienza)}
-SINTESI:      ${n(g.sintesi)}
-RACCOMAND.:   ${n(g.raccomandazione)}
-
-PROCEDURA:    ${n(p.tipo)} | ${n(p.tribunale)} | RGE ${n(p.rge)}
-GIUDICE:      ${n(p.giudice)} | Delegato: ${n(p.delegato)}
-PUBBLICAZ.:   ${n(p.data_pubblicazione)}
-
-IMMOBILE:     ${n(im.tipologia)} — ${n(im.ubicazione)}
-SUPERFICIE:   ${n(im.superficie_catastale)} | Cat. ${n(im.categoria_catastale)} | Rendita ${n(im.rendita_catastale)}
-CATASTO:      Fg.${n(im.foglio)} / Part.${n(im.particella)} / Sub.${n(im.subalterno)}
-
-VALORE STIMA: ${n(ec.valore_stima)}
-BASE 1ª ASTA: ${n(ec.prezzo_base_prima_asta)} (sconto ${n(ec.sconto_percentuale)})
-BASE 2ª ASTA: ${n(ec.prezzo_base_seconda_asta)}
-CAUZIONE:     ${n(ec.cauzione)}
-
-IPOTECHE:     ${n(vin.ipoteche)}
-TRASCRIZIONI: ${n(vin.trascrizioni)}
-OCCUPANTI:    ${n(vin.occupanti)}
-
-DATA 1ª ASTA: ${n(mo.data_prima_asta)}
-DATA 2ª ASTA: ${n(mo.data_seconda_asta)}
-TERMINE OFF.: ${n(mo.termine_offerte)}
-
-RISCHI:
-${(d.rischi||[]).map((r,i)=>'  '+(i+1)+'. '+r).join('\n')||'  Nessun rischio identificato.'}
-
-OPPORTUNITÀ:
-${(d.opportunita||[]).map((o,i)=>'  '+(i+1)+'. '+o).join('\n')||'  Nessuna opportunità.'}
-
-══════════════════════════════════════════════════
-  Non costituisce consulenza legale ex L. 247/2012
-══════════════════════════════════════════════════`.trim();
+  const txt=`══════════════════════════════════════════════════\n  REPORT — Analisi Avviso di Vendita Immobiliare\n  Data: ${new Date().toLocaleString('it-IT')}\n  Documenti: ${S.results.length}\n══════════════════════════════════════════════════\n\nGIUDIZIO:     Rischio ${n(g.livello_rischio)} — Convenienza ${n(g.convenienza)}\nSINTESI:      ${n(g.sintesi)}\nRACCOMAND.:   ${n(g.raccomandazione)}\n\nPROCEDURA:    ${n(p.tipo)} | ${n(p.tribunale)} | RGE ${n(p.rge)}\nGIUDICE:      ${n(p.giudice)} | Delegato: ${n(p.delegato)}\nPUBBLICAZ.:   ${n(p.data_pubblicazione)}\n\nIMMOBILE:     ${n(im.tipologia)} — ${n(im.ubicazione)}\nSUPERFICIE:   ${n(im.superficie_catastale)} | Cat. ${n(im.categoria_catastale)} | Rendita ${n(im.rendita_catastale)}\nCATASTO:      Fg.${n(im.foglio)} / Part.${n(im.particella)} / Sub.${n(im.subalterno)}\n\nVALORE STIMA: ${n(ec.valore_stima)}\nBASE 1ª ASTA: ${n(ec.prezzo_base_prima_asta)} (sconto ${n(ec.sconto_percentuale)})\nBASE 2ª ASTA: ${n(ec.prezzo_base_seconda_asta)}\nCAUZIONE:     ${n(ec.cauzione)}\n\nIPOTECHE:     ${n(vin.ipoteche)}\nTRASCRIZIONI: ${n(vin.trascrizioni)}\nOCCUPANTI:    ${n(vin.occupanti)}\n\nDATA 1ª ASTA: ${n(mo.data_prima_asta)}\nDATA 2ª ASTA: ${n(mo.data_seconda_asta)}\nTERMINE OFF.: ${n(mo.termine_offerte)}\n\nRISCHI:\n${(d.rischi||[]).map((r,i)=>'  '+(i+1)+'. '+r).join('\n')||'  Nessun rischio identificato.'}\n\nOPPORTUNITÀ:\n${(d.opportunita||[]).map((o,i)=>'  '+(i+1)+'. '+o).join('\n')||'  Nessuna opportunità.'}\n\n══════════════════════════════════════════════════\n  Non costituisce consulenza legale ex L. 247/2012\n══════════════════════════════════════════════════`.trim();
   dl('report_asta.txt',txt,'text/plain');
 }
-
 function dl(name,content,mime){
-  const b=new Blob([content],{type:mime+';charset=utf-8'});
-  const u=URL.createObjectURL(b);
-  const a=document.createElement('a');
-  a.href=u;a.download=name;a.click();
+  const b=new Blob([content],{type:mime+';charset=utf-8'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();
   setTimeout(()=>URL.revokeObjectURL(u),1000);
 }
-
-// ── HELPERS ──
-function setP(pct,title,desc){
-  $('progBar').style.width=pct+'%';
-  if(title)$('progTitle').textContent=title;
-  if(desc)$('progDesc').textContent=desc;
-}
-function log(msg,type){
-  const el=document.createElement('div');
-  el.className='plog '+(type||'info');
-  el.textContent=msg;
-  $('progLog').appendChild(el);
-  $('progLog').scrollTop=$('progLog').scrollHeight;
-}
+function setP(pct,title,desc){$('progBar').style.width=pct+'%';if(title)$('progTitle').textContent=title;if(desc)$('progDesc').textContent=desc;}
+function log(msg,type){const el=document.createElement('div');el.className='plog '+(type||'info');el.textContent=msg;$('progLog').appendChild(el);$('progLog').scrollTop=$('progLog').scrollHeight;}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
 </body>
