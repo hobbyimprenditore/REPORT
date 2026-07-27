@@ -758,17 +758,22 @@ async function initAuth(){
 
 // Controlla se l'utente è stato sospeso dal proprietario del sito prima di dare accesso
 async function afterAuthCheck(session){
-  const{data:profile}=await sb.from('profiles').select('is_blocked,is_admin').eq('id',session.user.id).single();
-  if(profile&&profile.is_blocked){
+  const {data:profile}=await sb.from('profiles').select('is_blocked,is_admin').eq('id',session.user.id).single();
+  if(profile && profile.is_blocked){
     await sb.auth.signOut();
     setAuthUI(null);
     showAuthMsg('Il tuo account è stato sospeso. Per assistenza scrivici via Instagram o email.','err');
     openAuthModal('login');
     return;
   }
-  isAdmin=!!(profile&&profile.is_admin);
-  $('adminGear').classList.toggle('hidden',!isAdmin);
+  isAdmin = !!(profile && profile.is_admin);
+  $('adminGear').classList.toggle('hidden', !isAdmin);
   setAuthUI(session.user);
+  
+  // Carica crediti dal database
+  await caricaCrediti();
+  // Mostra il pannello crediti nella topbar
+  $('creditPanel').classList.remove('hidden');
 }
 
 function setAuthUI(user){
